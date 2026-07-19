@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4353E87842E1DE019B57287E /* FoodLog.swift */; };
+		14E455B7D761A2A5569CD582 /* FoodLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8021A7DE3D7F90389C81725 /* FoodLogView.swift */; };
+		1B673149CAE62E8E4FEC50B2 /* Meal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3968C93D864558F1DB87A76 /* Meal.swift */; };
+		28404818AEE2BDAF75ECF22F /* OpenFoodFactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */; };
+		38A4E2BF1ACDA66E2FA51664 /* TodayMealsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A37F96D5637B8466DFE41E /* TodayMealsSection.swift */; };
+		3A39797E4504AB5A6A822F83 /* HealthTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E1835B5C8F30F9D4BD65B4 /* HealthTrackerApp.swift */; };
+		4A32E163E111A80F036F359E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5AC3E9C0E6A697BB56E25A8 /* ContentView.swift */; };
+		58282CB5D17193A11879E8BD /* AddGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D939D7DC66776EDBCDC0639 /* AddGoalView.swift */; };
+		58769B61C69EC3DBD9593501 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3173664487E70C187641837 /* HomeView.swift */; };
+		719E2329C08AEE18BB71AA6B /* AddFoodToMealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AF7B9661511F6D0E6A5F66 /* AddFoodToMealView.swift */; };
+		8A5F9F890375B7EAFB02D935 /* BarcodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0B0DBAD9DA455AFB1B7A1 /* BarcodeScannerView.swift */; };
+		99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7165BA0322BBB7141EED69 /* MealPlanView.swift */; };
+		E5999E2A337CFBCCDF38B9D5 /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */; };
+		EE88976FD3F04C350E8AC2E4 /* MacroProgressCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9809F0C216CBF8755FDA6A26 /* MacroProgressCard.swift */; };
+		EED94614ED79A297E427DB84 /* NoGoalBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967331C44D7C971CBB10BF4A /* NoGoalBanner.swift */; };
+		F3C52385E637DDB7D17143C5 /* FoodProduct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79910E7320F38EFEFEAA0219 /* FoodProduct.swift */; };
+		F7C0D59A555E8B535B98316E /* Goal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569D8CEE9DF3A85BB094A460 /* Goal.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0AD0B0DBAD9DA455AFB1B7A1 /* BarcodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerView.swift; sourceTree = "<group>"; };
+		18AF7B9661511F6D0E6A5F66 /* AddFoodToMealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFoodToMealView.swift; sourceTree = "<group>"; };
+		4353E87842E1DE019B57287E /* FoodLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodLog.swift; sourceTree = "<group>"; };
+		569D8CEE9DF3A85BB094A460 /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
+		6D98CF1A3E203B0805534D5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		79910E7320F38EFEFEAA0219 /* FoodProduct.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodProduct.swift; sourceTree = "<group>"; };
+		88A37F96D5637B8466DFE41E /* TodayMealsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayMealsSection.swift; sourceTree = "<group>"; };
+		967331C44D7C971CBB10BF4A /* NoGoalBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoGoalBanner.swift; sourceTree = "<group>"; };
+		9809F0C216CBF8755FDA6A26 /* MacroProgressCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroProgressCard.swift; sourceTree = "<group>"; };
+		9D939D7DC66776EDBCDC0639 /* AddGoalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddGoalView.swift; sourceTree = "<group>"; };
+		A8021A7DE3D7F90389C81725 /* FoodLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodLogView.swift; sourceTree = "<group>"; };
+		BF7165BA0322BBB7141EED69 /* MealPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
+		C3173664487E70C187641837 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		C3968C93D864558F1DB87A76 /* Meal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meal.swift; sourceTree = "<group>"; };
+		C5E1835B5C8F30F9D4BD65B4 /* HealthTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthTrackerApp.swift; sourceTree = "<group>"; };
+		D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFoodFactsService.swift; sourceTree = "<group>"; };
+		D74CE4A70C010CFDBCB93940 /* HealthTracker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HealthTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsView.swift; sourceTree = "<group>"; };
+		E5AC3E9C0E6A697BB56E25A8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0614DF02992BC3FEF9096485 /* MealPlan */ = {
+			isa = PBXGroup;
+			children = (
+				BF7165BA0322BBB7141EED69 /* MealPlanView.swift */,
+			);
+			path = MealPlan;
+			sourceTree = "<group>";
+		};
+		06FD1DFEC9BD2CF68FDFBAC1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4353E87842E1DE019B57287E /* FoodLog.swift */,
+				79910E7320F38EFEFEAA0219 /* FoodProduct.swift */,
+				569D8CEE9DF3A85BB094A460 /* Goal.swift */,
+				C3968C93D864558F1DB87A76 /* Meal.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		3A9A249DF46FD2BE57918F3E /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				9809F0C216CBF8755FDA6A26 /* MacroProgressCard.swift */,
+				967331C44D7C971CBB10BF4A /* NoGoalBanner.swift */,
+				88A37F96D5637B8466DFE41E /* TodayMealsSection.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		3C11B2A09827F090D7877D15 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				18AF7B9661511F6D0E6A5F66 /* AddFoodToMealView.swift */,
+				0AD0B0DBAD9DA455AFB1B7A1 /* BarcodeScannerView.swift */,
+				E5AC3E9C0E6A697BB56E25A8 /* ContentView.swift */,
+				C3173664487E70C187641837 /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		6E48B5C56668D2DD9BB3DBE2 /* HealthTracker */ = {
+			isa = PBXGroup;
+			children = (
+				C5E1835B5C8F30F9D4BD65B4 /* HealthTrackerApp.swift */,
+				6D98CF1A3E203B0805534D5C /* Info.plist */,
+				06FD1DFEC9BD2CF68FDFBAC1 /* Models */,
+				FADE365DE14A4D9A3BB73A6D /* Services */,
+				A4EF703609C78813A4006BBC /* Views */,
+			);
+			path = HealthTracker;
+			sourceTree = "<group>";
+		};
+		A4EF703609C78813A4006BBC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				3A9A249DF46FD2BE57918F3E /* Components */,
+				C359883F463F8870212E1339 /* FoodLog */,
+				BF271AA6E02E36C7178E5C5B /* Goals */,
+				3C11B2A09827F090D7877D15 /* Home */,
+				0614DF02992BC3FEF9096485 /* MealPlan */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		BF271AA6E02E36C7178E5C5B /* Goals */ = {
+			isa = PBXGroup;
+			children = (
+				9D939D7DC66776EDBCDC0639 /* AddGoalView.swift */,
+				D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */,
+			);
+			path = Goals;
+			sourceTree = "<group>";
+		};
+		C359883F463F8870212E1339 /* FoodLog */ = {
+			isa = PBXGroup;
+			children = (
+				A8021A7DE3D7F90389C81725 /* FoodLogView.swift */,
+			);
+			path = FoodLog;
+			sourceTree = "<group>";
+		};
+		EFBA0E4710555A983C146492 = {
+			isa = PBXGroup;
+			children = (
+				6E48B5C56668D2DD9BB3DBE2 /* HealthTracker */,
+				F301ACCB1E7315088AE2DA04 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F301ACCB1E7315088AE2DA04 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D74CE4A70C010CFDBCB93940 /* HealthTracker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FADE365DE14A4D9A3BB73A6D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F2EF49F1EF4FF240EAD4E803 /* HealthTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D43F69F8BBB571993081214D /* Build configuration list for PBXNativeTarget "HealthTracker" */;
+			buildPhases = (
+				9E8956505AD43441B5EC8EFC /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = HealthTracker;
+			packageProductDependencies = (
+			);
+			productName = HealthTracker;
+			productReference = D74CE4A70C010CFDBCB93940 /* HealthTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FE913866E09828EF29E704B2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					F2EF49F1EF4FF240EAD4E803 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = CDBD717EA3D89E692CB99C89 /* Build configuration list for PBXProject "HealthTracker" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = EFBA0E4710555A983C146492;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F301ACCB1E7315088AE2DA04 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F2EF49F1EF4FF240EAD4E803 /* HealthTracker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9E8956505AD43441B5EC8EFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				719E2329C08AEE18BB71AA6B /* AddFoodToMealView.swift in Sources */,
+				58282CB5D17193A11879E8BD /* AddGoalView.swift in Sources */,
+				8A5F9F890375B7EAFB02D935 /* BarcodeScannerView.swift in Sources */,
+				4A32E163E111A80F036F359E /* ContentView.swift in Sources */,
+				01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */,
+				14E455B7D761A2A5569CD582 /* FoodLogView.swift in Sources */,
+				F3C52385E637DDB7D17143C5 /* FoodProduct.swift in Sources */,
+				F7C0D59A555E8B535B98316E /* Goal.swift in Sources */,
+				E5999E2A337CFBCCDF38B9D5 /* GoalsView.swift in Sources */,
+				3A39797E4504AB5A6A822F83 /* HealthTrackerApp.swift in Sources */,
+				58769B61C69EC3DBD9593501 /* HomeView.swift in Sources */,
+				EE88976FD3F04C350E8AC2E4 /* MacroProgressCard.swift in Sources */,
+				1B673149CAE62E8E4FEC50B2 /* Meal.swift in Sources */,
+				99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */,
+				EED94614ED79A297E427DB84 /* NoGoalBanner.swift in Sources */,
+				28404818AEE2BDAF75ECF22F /* OpenFoodFactsService.swift in Sources */,
+				38A4E2BF1ACDA66E2FA51664 /* TodayMealsSection.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		095E7DFA1A0142CF7699B176 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = HealthTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.arushi.HealthTracker;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B0CC6E1BDA2245E69A0E7DB7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = HealthTracker/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.arushi.HealthTracker;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		C4D08898051C80760FB3C29B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		F39EB0C5F961FCD97F8725F8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CDBD717EA3D89E692CB99C89 /* Build configuration list for PBXProject "HealthTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F39EB0C5F961FCD97F8725F8 /* Debug */,
+				C4D08898051C80760FB3C29B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D43F69F8BBB571993081214D /* Build configuration list for PBXNativeTarget "HealthTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0CC6E1BDA2245E69A0E7DB7 /* Debug */,
+				095E7DFA1A0142CF7699B176 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FE913866E09828EF29E704B2 /* Project object */;
+}
