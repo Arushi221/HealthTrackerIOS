@@ -58,7 +58,7 @@ struct BarcodeScannerView: View {
         isLoading = true
         errorMessage = nil
         do {
-            let product = try await OpenFoodFactsService.shared.fetchProduct(barcode: barcode)
+            let product = try await FoodLookupService.shared.lookup(barcode: barcode)
             fetchedProduct = product
         } catch {
             errorMessage = (error as? OFFError)?.errorDescription ?? error.localizedDescription
