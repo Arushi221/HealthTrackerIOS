@@ -18,8 +18,12 @@
 		58769B61C69EC3DBD9593501 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3173664487E70C187641837 /* HomeView.swift */; };
 		719E2329C08AEE18BB71AA6B /* AddFoodToMealView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18AF7B9661511F6D0E6A5F66 /* AddFoodToMealView.swift */; };
 		8A5F9F890375B7EAFB02D935 /* BarcodeScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD0B0DBAD9DA455AFB1B7A1 /* BarcodeScannerView.swift */; };
+		8C8EB1204B26CA369410E7A4 /* Secrets.swift.example in Resources */ = {isa = PBXBuildFile; fileRef = D05E70F5EFD2309B91C3F539 /* Secrets.swift.example */; };
+		9652D3D04809B0062F3B5016 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6803F67A6868A5E6B78A54A /* Secrets.swift */; };
 		99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7165BA0322BBB7141EED69 /* MealPlanView.swift */; };
+		A6779DCEC34DF673EEC2295C /* USDAService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01563E12C1F8267343253B4B /* USDAService.swift */; };
 		E5999E2A337CFBCCDF38B9D5 /* GoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */; };
+		EC02E4406770D6611F5CA559 /* FoodLookupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F309DF5E5978563154E8E6 /* FoodLookupService.swift */; };
 		EE88976FD3F04C350E8AC2E4 /* MacroProgressCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9809F0C216CBF8755FDA6A26 /* MacroProgressCard.swift */; };
 		EED94614ED79A297E427DB84 /* NoGoalBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 967331C44D7C971CBB10BF4A /* NoGoalBanner.swift */; };
 		F3C52385E637DDB7D17143C5 /* FoodProduct.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79910E7320F38EFEFEAA0219 /* FoodProduct.swift */; };
@@ -27,6 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		01563E12C1F8267343253B4B /* USDAService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDAService.swift; sourceTree = "<group>"; };
 		0AD0B0DBAD9DA455AFB1B7A1 /* BarcodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerView.swift; sourceTree = "<group>"; };
 		18AF7B9661511F6D0E6A5F66 /* AddFoodToMealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFoodToMealView.swift; sourceTree = "<group>"; };
 		4353E87842E1DE019B57287E /* FoodLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodLog.swift; sourceTree = "<group>"; };
@@ -42,10 +47,13 @@
 		C3173664487E70C187641837 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C3968C93D864558F1DB87A76 /* Meal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meal.swift; sourceTree = "<group>"; };
 		C5E1835B5C8F30F9D4BD65B4 /* HealthTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthTrackerApp.swift; sourceTree = "<group>"; };
+		D05E70F5EFD2309B91C3F539 /* Secrets.swift.example */ = {isa = PBXFileReference; path = Secrets.swift.example; sourceTree = "<group>"; };
 		D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFoodFactsService.swift; sourceTree = "<group>"; };
 		D74CE4A70C010CFDBCB93940 /* HealthTracker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HealthTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsView.swift; sourceTree = "<group>"; };
 		E5AC3E9C0E6A697BB56E25A8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F6803F67A6868A5E6B78A54A /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
+		F8F309DF5E5978563154E8E6 /* FoodLookupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodLookupService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -96,6 +104,7 @@
 				6D98CF1A3E203B0805534D5C /* Info.plist */,
 				06FD1DFEC9BD2CF68FDFBAC1 /* Models */,
 				FADE365DE14A4D9A3BB73A6D /* Services */,
+				EC6A16C9126AB2D87F1ED9DF /* Utilities */,
 				A4EF703609C78813A4006BBC /* Views */,
 			);
 			path = HealthTracker;
@@ -130,6 +139,15 @@
 			path = FoodLog;
 			sourceTree = "<group>";
 		};
+		EC6A16C9126AB2D87F1ED9DF /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F6803F67A6868A5E6B78A54A /* Secrets.swift */,
+				D05E70F5EFD2309B91C3F539 /* Secrets.swift.example */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		EFBA0E4710555A983C146492 = {
 			isa = PBXGroup;
 			children = (
@@ -149,7 +167,9 @@
 		FADE365DE14A4D9A3BB73A6D /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				F8F309DF5E5978563154E8E6 /* FoodLookupService.swift */,
 				D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */,
+				01563E12C1F8267343253B4B /* USDAService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -162,6 +182,7 @@
 			buildConfigurationList = D43F69F8BBB571993081214D /* Build configuration list for PBXNativeTarget "HealthTracker" */;
 			buildPhases = (
 				9E8956505AD43441B5EC8EFC /* Sources */,
+				754B4E9A388040E061EF5C1E /* Resources */,
 			);
 			buildRules = (
 			);
@@ -207,6 +228,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		754B4E9A388040E061EF5C1E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C8EB1204B26CA369410E7A4 /* Secrets.swift.example in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		9E8956505AD43441B5EC8EFC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -218,6 +250,7 @@
 				4A32E163E111A80F036F359E /* ContentView.swift in Sources */,
 				01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */,
 				14E455B7D761A2A5569CD582 /* FoodLogView.swift in Sources */,
+				EC02E4406770D6611F5CA559 /* FoodLookupService.swift in Sources */,
 				F3C52385E637DDB7D17143C5 /* FoodProduct.swift in Sources */,
 				F7C0D59A555E8B535B98316E /* Goal.swift in Sources */,
 				E5999E2A337CFBCCDF38B9D5 /* GoalsView.swift in Sources */,
@@ -228,7 +261,9 @@
 				99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */,
 				EED94614ED79A297E427DB84 /* NoGoalBanner.swift in Sources */,
 				28404818AEE2BDAF75ECF22F /* OpenFoodFactsService.swift in Sources */,
+				9652D3D04809B0062F3B5016 /* Secrets.swift in Sources */,
 				38A4E2BF1ACDA66E2FA51664 /* TodayMealsSection.swift in Sources */,
+				A6779DCEC34DF673EEC2295C /* USDAService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -17,13 +17,38 @@ struct OFFProduct: Decodable {
 }
 
 struct OFFNutriments: Decodable {
+    // Macros
     let energyKcal100g: Double?
     let proteins100g: Double?
     let carbohydrates100g: Double?
     let fat100g: Double?
     let fiber100g: Double?
     let sugars100g: Double?
-    let sodium100g: Double?
+    let saturatedFat100g: Double?
+    let transFat100g: Double?
+
+    // Minerals (mg per 100g unless noted)
+    let sodium100g: Double?      // returned in g, converted on use
+    let calcium100g: Double?
+    let iron100g: Double?
+    let potassium100g: Double?
+    let magnesium100g: Double?
+    let zinc100g: Double?
+    let phosphorus100g: Double?
+
+    // Vitamins
+    let vitaminA100g: Double?    // µg
+    let vitaminC100g: Double?    // mg
+    let vitaminD100g: Double?    // µg
+    let vitaminE100g: Double?    // mg
+    let vitaminK100g: Double?    // µg
+    let vitaminB12100g: Double?  // µg
+    let vitaminB6100g: Double?   // mg
+    let folate100g: Double?      // µg
+
+    // Fatty acids
+    let omega3100g: Double?      // g
+    let omega6100g: Double?      // g
 
     enum CodingKeys: String, CodingKey {
         case energyKcal100g    = "energy-kcal_100g"
@@ -32,7 +57,25 @@ struct OFFNutriments: Decodable {
         case fat100g           = "fat_100g"
         case fiber100g         = "fiber_100g"
         case sugars100g        = "sugars_100g"
+        case saturatedFat100g  = "saturated-fat_100g"
+        case transFat100g      = "trans-fat_100g"
         case sodium100g        = "sodium_100g"
+        case calcium100g       = "calcium_100g"
+        case iron100g          = "iron_100g"
+        case potassium100g     = "potassium_100g"
+        case magnesium100g     = "magnesium_100g"
+        case zinc100g          = "zinc_100g"
+        case phosphorus100g    = "phosphorus_100g"
+        case vitaminA100g      = "vitamin-a_100g"
+        case vitaminC100g      = "vitamin-c_100g"
+        case vitaminD100g      = "vitamin-d_100g"
+        case vitaminE100g      = "vitamin-e_100g"
+        case vitaminK100g      = "vitamin-k_100g"
+        case vitaminB12100g    = "vitamin-b12_100g"
+        case vitaminB6100g     = "vitamin-b6_100g"
+        case folate100g        = "folate_100g"
+        case omega3100g        = "omega-3-fat_100g"
+        case omega6100g        = "omega-6-fat_100g"
     }
 }
 
@@ -98,7 +141,31 @@ actor OpenFoodFactsService {
         let n = off.nutriments
 
         var micronutrients: [String: Double] = [:]
-        if let sodium = n?.sodium100g { micronutrients["sodium"] = sodium * 1000 }  // convert kg→mg
+
+        // Fats
+        if let v = n?.saturatedFat100g  { micronutrients["saturated_fat"]  = v }
+        if let v = n?.transFat100g      { micronutrients["trans_fat"]       = v }
+        if let v = n?.omega3100g        { micronutrients["omega_3"]         = v }
+        if let v = n?.omega6100g        { micronutrients["omega_6"]         = v }
+
+        // Minerals — OFF returns sodium in kg/100g, rest in g/100g; convert all to mg
+        if let v = n?.sodium100g     { micronutrients["sodium"]      = v * 1000 }
+        if let v = n?.calcium100g    { micronutrients["calcium"]     = v * 1000 }
+        if let v = n?.iron100g       { micronutrients["iron"]        = v * 1000 }
+        if let v = n?.potassium100g  { micronutrients["potassium"]   = v * 1000 }
+        if let v = n?.magnesium100g  { micronutrients["magnesium"]   = v * 1000 }
+        if let v = n?.zinc100g       { micronutrients["zinc"]        = v * 1000 }
+        if let v = n?.phosphorus100g { micronutrients["phosphorus"]  = v * 1000 }
+
+        // Vitamins — stored in their natural units (µg or mg per 100g)
+        if let v = n?.vitaminA100g   { micronutrients["vitamin_a"]   = v }
+        if let v = n?.vitaminC100g   { micronutrients["vitamin_c"]   = v }
+        if let v = n?.vitaminD100g   { micronutrients["vitamin_d"]   = v }
+        if let v = n?.vitaminE100g   { micronutrients["vitamin_e"]   = v }
+        if let v = n?.vitaminK100g   { micronutrients["vitamin_k"]   = v }
+        if let v = n?.vitaminB12100g { micronutrients["vitamin_b12"] = v }
+        if let v = n?.vitaminB6100g  { micronutrients["vitamin_b6"]  = v }
+        if let v = n?.folate100g     { micronutrients["folate"]      = v }
 
         let allergenList = parseAllergens(off.allergens)
 
