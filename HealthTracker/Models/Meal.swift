@@ -19,6 +19,11 @@ final class MealItem {
     var carbs: Double    { product.carbs    * servings }
     var fat: Double      { product.fat      * servings }
 
+    func amount(of nutrientKey: String) -> Double {
+    (product.micronutrients[nutrientKey] ?? 0) * servings
+}
+
+
     init(product: FoodProduct, servings: Double = 1.0) {
         self.product = product
         self.servings = servings
@@ -37,6 +42,7 @@ final class Meal {
     var totalProtein: Double  { items.reduce(0) { $0 + $1.protein  } }
     var totalCarbs: Double    { items.reduce(0) { $0 + $1.carbs    } }
     var totalFat: Double      { items.reduce(0) { $0 + $1.fat      } }
+    func totalAmount(of nutrientKey: String) -> Double { items.reduce(0) { $0 + $1.amount(of: nutrientKey) } }
 
     init(name: String, mealType: MealType, items: [MealItem] = [], date: Date = Date()) {
         self.id = UUID()

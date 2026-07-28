@@ -8,8 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4353E87842E1DE019B57287E /* FoodLog.swift */; };
+		410F922E2FDB73B0510780A0 /* FoodSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17C003DD582CD2FA28DBA5DC /* FoodSearchView.swift */; };
+		D47DC1C9AF496407E71511D9 /* NutrientCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A4B203C1BA5922F99BB13 /* NutrientCatalog.swift */; };
+		4C23FC18883102A40C0DF597 /* AddNutrientGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19BFADD40954FA428E1D1542 /* AddNutrientGoalView.swift */; };
+		09B88483902773AB55BC8450 /* NutrientProgressCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26F75F47365B9F768865880A /* NutrientProgressCard.swift */; };
 		14E455B7D761A2A5569CD582 /* FoodLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8021A7DE3D7F90389C81725 /* FoodLogView.swift */; };
 		1B673149CAE62E8E4FEC50B2 /* Meal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3968C93D864558F1DB87A76 /* Meal.swift */; };
+		1B76F83030185C4500611817 /* NutrientGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B76F82F30185C4500611817 /* NutrientGoal.swift */; };
+		1B76F8323018606600611817 /* NutrientProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B76F8313018606600611817 /* NutrientProgress.swift */; };
 		28404818AEE2BDAF75ECF22F /* OpenFoodFactsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */; };
 		38A4E2BF1ACDA66E2FA51664 /* TodayMealsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A37F96D5637B8466DFE41E /* TodayMealsSection.swift */; };
 		3A39797E4504AB5A6A822F83 /* HealthTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5E1835B5C8F30F9D4BD65B4 /* HealthTrackerApp.swift */; };
@@ -32,8 +38,14 @@
 
 /* Begin PBXFileReference section */
 		01563E12C1F8267343253B4B /* USDAService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDAService.swift; sourceTree = "<group>"; };
+		17C003DD582CD2FA28DBA5DC /* FoodSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSearchView.swift; sourceTree = "<group>"; };
+		C76A4B203C1BA5922F99BB13 /* NutrientCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientCatalog.swift; sourceTree = "<group>"; };
+		19BFADD40954FA428E1D1542 /* AddNutrientGoalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNutrientGoalView.swift; sourceTree = "<group>"; };
+		26F75F47365B9F768865880A /* NutrientProgressCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientProgressCard.swift; sourceTree = "<group>"; };
 		0AD0B0DBAD9DA455AFB1B7A1 /* BarcodeScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarcodeScannerView.swift; sourceTree = "<group>"; };
 		18AF7B9661511F6D0E6A5F66 /* AddFoodToMealView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFoodToMealView.swift; sourceTree = "<group>"; };
+		1B76F82F30185C4500611817 /* NutrientGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientGoal.swift; sourceTree = "<group>"; };
+		1B76F8313018606600611817 /* NutrientProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientProgress.swift; sourceTree = "<group>"; };
 		4353E87842E1DE019B57287E /* FoodLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodLog.swift; sourceTree = "<group>"; };
 		569D8CEE9DF3A85BB094A460 /* Goal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Goal.swift; sourceTree = "<group>"; };
 		6D98CF1A3E203B0805534D5C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -47,7 +59,7 @@
 		C3173664487E70C187641837 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C3968C93D864558F1DB87A76 /* Meal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meal.swift; sourceTree = "<group>"; };
 		C5E1835B5C8F30F9D4BD65B4 /* HealthTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthTrackerApp.swift; sourceTree = "<group>"; };
-		D05E70F5EFD2309B91C3F539 /* Secrets.swift.example */ = {isa = PBXFileReference; path = Secrets.swift.example; sourceTree = "<group>"; };
+		D05E70F5EFD2309B91C3F539 /* Secrets.swift.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.swift.example; sourceTree = "<group>"; };
 		D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenFoodFactsService.swift; sourceTree = "<group>"; };
 		D74CE4A70C010CFDBCB93940 /* HealthTracker.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = HealthTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsView.swift; sourceTree = "<group>"; };
@@ -68,6 +80,9 @@
 		06FD1DFEC9BD2CF68FDFBAC1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				1B76F8313018606600611817 /* NutrientProgress.swift */,
+				1B76F82F30185C4500611817 /* NutrientGoal.swift */,
+				C76A4B203C1BA5922F99BB13 /* NutrientCatalog.swift */,
 				4353E87842E1DE019B57287E /* FoodLog.swift */,
 				79910E7320F38EFEFEAA0219 /* FoodProduct.swift */,
 				569D8CEE9DF3A85BB094A460 /* Goal.swift */,
@@ -80,6 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				9809F0C216CBF8755FDA6A26 /* MacroProgressCard.swift */,
+				26F75F47365B9F768865880A /* NutrientProgressCard.swift */,
 				967331C44D7C971CBB10BF4A /* NoGoalBanner.swift */,
 				88A37F96D5637B8466DFE41E /* TodayMealsSection.swift */,
 			);
@@ -92,6 +108,7 @@
 				18AF7B9661511F6D0E6A5F66 /* AddFoodToMealView.swift */,
 				0AD0B0DBAD9DA455AFB1B7A1 /* BarcodeScannerView.swift */,
 				E5AC3E9C0E6A697BB56E25A8 /* ContentView.swift */,
+				17C003DD582CD2FA28DBA5DC /* FoodSearchView.swift */,
 				C3173664487E70C187641837 /* HomeView.swift */,
 			);
 			path = Home;
@@ -126,6 +143,7 @@
 			isa = PBXGroup;
 			children = (
 				9D939D7DC66776EDBCDC0639 /* AddGoalView.swift */,
+				19BFADD40954FA428E1D1542 /* AddNutrientGoalView.swift */,
 				D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */,
 			);
 			path = Goals;
@@ -246,14 +264,20 @@
 			files = (
 				719E2329C08AEE18BB71AA6B /* AddFoodToMealView.swift in Sources */,
 				58282CB5D17193A11879E8BD /* AddGoalView.swift in Sources */,
+				410F922E2FDB73B0510780A0 /* FoodSearchView.swift in Sources */,
+				D47DC1C9AF496407E71511D9 /* NutrientCatalog.swift in Sources */,
+				4C23FC18883102A40C0DF597 /* AddNutrientGoalView.swift in Sources */,
+				09B88483902773AB55BC8450 /* NutrientProgressCard.swift in Sources */,
 				8A5F9F890375B7EAFB02D935 /* BarcodeScannerView.swift in Sources */,
 				4A32E163E111A80F036F359E /* ContentView.swift in Sources */,
 				01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */,
+				1B76F8323018606600611817 /* NutrientProgress.swift in Sources */,
 				14E455B7D761A2A5569CD582 /* FoodLogView.swift in Sources */,
 				EC02E4406770D6611F5CA559 /* FoodLookupService.swift in Sources */,
 				F3C52385E637DDB7D17143C5 /* FoodProduct.swift in Sources */,
 				F7C0D59A555E8B535B98316E /* Goal.swift in Sources */,
 				E5999E2A337CFBCCDF38B9D5 /* GoalsView.swift in Sources */,
+				1B76F83030185C4500611817 /* NutrientGoal.swift in Sources */,
 				3A39797E4504AB5A6A822F83 /* HealthTrackerApp.swift in Sources */,
 				58769B61C69EC3DBD9593501 /* HomeView.swift in Sources */,
 				EE88976FD3F04C350E8AC2E4 /* MacroProgressCard.swift in Sources */,

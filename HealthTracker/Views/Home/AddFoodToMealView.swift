@@ -7,11 +7,18 @@ struct AddFoodToMealView: View {
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
 
     let product: FoodProduct
+    let presetMealType: MealType?
     let onSave: () -> Void
 
-    @State private var mealName: String = ""
-    @State private var mealType: MealType = .lunch
+    @State private var mealType: MealType
     @State private var servings: String = "1"
+
+    init(product: FoodProduct, presetMealType: MealType? = nil, onSave: @escaping () -> Void) {
+        self.product = product
+        self.presetMealType = presetMealType
+        self.onSave = onSave
+        _mealType = State(initialValue: presetMealType ?? .lunch)
+    }
 
     var body: some View {
         NavigationStack {
@@ -28,9 +35,10 @@ struct AddFoodToMealView: View {
                 }
 
                 Section("Log as") {
-                    TextField("Meal name (e.g. Lunch)", text: $mealName)
-                    Picker("Type", selection: $mealType) {
-                        ForEach(MealType.allCases, id: \.self) { Text($0.rawValue) }
+                    if presetMealType == nil {
+                        Picker("Type", selection: $mealType) {
+                            ForEach(MealType.allCases, id: \.self) { Text($0.rawValue) }
+                        }
                     }
                     HStack {
                         Text("Servings")
@@ -42,13 +50,13 @@ struct AddFoodToMealView: View {
                     }
                 }
             }
-            .navigationTitle("Add to Log")
+            .navigationTitle("Add to \(mealType.rawValue)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Log") { log() }
-                        .disabled(mealName.isEmpty || Double(servings) == nil)
+                        .disabled(Double(servings) == nil)
                 }
             }
         }
@@ -61,7 +69,7 @@ struct AddFoodToMealView: View {
         let item = MealItem(product: product, servings: s)
         context.insert(item)
 
-        let meal = Meal(name: mealName.isEmpty ? product.name : mealName, mealType: mealType, items: [item])
+        let meal = Meal(name: product.name, mealType: mealType, items: [item])
         context.insert(meal)
 
         let goalId = goals.first(where: { $0.period == .day })?.id ?? UUID()

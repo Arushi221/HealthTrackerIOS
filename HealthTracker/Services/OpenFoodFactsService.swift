@@ -1,6 +1,7 @@
 import Foundation
 
 struct OFFProduct: Decodable {
+    let code: String?
     let productName: String?
     let brands: String?
     let nutriments: OFFNutriments?
@@ -8,6 +9,40 @@ struct OFFProduct: Decodable {
     let servingSize: String?
 
     enum CodingKeys: String, CodingKey {
+        case code
+        case productName = "product_name"
+        case brands
+        case nutriments
+        case allergens
+        case servingSize = "serving_size"
+    }
+}
+
+// The search-a-licious service (search.openfoodfacts.org) returns a different shape
+// than the single-product v2 API — "hits" instead of "products", and "brands" as an array.
+private struct OFFSearchResponse: Decodable {
+    let hits: [FailableDecodable<OFFSearchHit>]
+}
+
+// Wraps a Decodable so one malformed entry in an array doesn't sink the whole decode —
+// OFF is community-submitted data and individual products are sometimes missing/malformed fields.
+private struct FailableDecodable<T: Decodable>: Decodable {
+    let value: T?
+    init(from decoder: Decoder) throws {
+        value = try? T(from: decoder)
+    }
+}
+
+private struct OFFSearchHit: Decodable {
+    let code: String?
+    let productName: String?
+    let brands: [String]?
+    let nutriments: OFFNutriments?
+    let allergens: String?
+    let servingSize: String?
+
+    enum CodingKeys: String, CodingKey {
+        case code
         case productName = "product_name"
         case brands
         case nutriments
@@ -135,6 +170,51 @@ actor OpenFoodFactsService {
         }
 
         return map(off, barcode: barcode)
+    }
+
+    // Free-text search, e.g. "wheat thins" — returns candidate matches for the user to pick from
+    func search(query: String) async throws -> [FoodProduct] {
+        guard var components = URLComponents(string: "https://search.openfoodfacts.org/search") else {
+            throw OFFError.notFound
+        }
+        components.queryItems = [
+            URLQueryItem(name: "q", value: query),
+            URLQueryItem(name: "page_size", value: "20"),
+            URLQueryItem(name: "fields", value: "code,product_name,brands,nutriments,allergens,serving_size")
+        ]
+        guard let url = components.url else { throw OFFError.notFound }
+
+        let data: Data
+        do {
+            let (d, _) = try await session.data(from: url)
+            data = d
+        } catch {
+            throw OFFError.networkError(error)
+        }
+
+        let response: OFFSearchResponse
+        do {
+            response = try JSONDecoder().decode(OFFSearchResponse.self, from: data)
+        } catch {
+            throw OFFError.decodingError(error)
+        }
+
+        return response.hits
+            .compactMap(\.value)
+            .filter { $0.productName != nil && !$0.productName!.isEmpty }
+            .map(mapHit)
+    }
+
+    private func mapHit(_ hit: OFFSearchHit) -> FoodProduct {
+        let off = OFFProduct(
+            code: hit.code,
+            productName: hit.productName,
+            brands: hit.brands?.joined(separator: ", "),
+            nutriments: hit.nutriments,
+            allergens: hit.allergens,
+            servingSize: hit.servingSize
+        )
+        return map(off, barcode: hit.code ?? "")
     }
 
     private func map(_ off: OFFProduct, barcode: String) -> FoodProduct {

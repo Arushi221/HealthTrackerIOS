@@ -3,21 +3,63 @@ import SwiftUI
 struct TodayMealsSection: View {
     let logs: [FoodLog]
 
+    private func logs(for mealType: MealType) -> [FoodLog] {
+        logs.filter { $0.meal.mealType == mealType }
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 20) {
             Text("Today's Meals")
                 .font(.headline)
 
+            ForEach(MealType.allCases, id: \.self) { mealType in
+                MealTypeSection(mealType: mealType, logs: logs(for: mealType))
+            }
+        }
+    }
+}
+
+private struct MealTypeSection: View {
+    let mealType: MealType
+    let logs: [FoodLog]
+
+    @State private var showingSearch = false
+
+    private var totalCalories: Double {
+        logs.reduce(0) { $0 + $1.meal.totalCalories }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Text(mealType.rawValue)
+                    .font(.subheadline.weight(.semibold))
+                Spacer()
+                if !logs.isEmpty {
+                    Text("\(Int(totalCalories)) kcal")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                Button {
+                    showingSearch = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                }
+            }
+
             if logs.isEmpty {
-                Text("No meals logged yet.")
+                Text("No items logged")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical)
+                    .padding(.vertical, 4)
             } else {
                 ForEach(logs) { log in
                     MealRow(meal: log.meal)
                 }
             }
+        }
+        .sheet(isPresented: $showingSearch) {
+            FoodSearchView(mealType: mealType)
         }
     }
 }
