@@ -4,6 +4,7 @@ import SwiftData
 struct HomeView: View {
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
     @Query private var logs: [FoodLog]
+    @State private var exerciseCalories: Double = 0
 
     private var todayLogs: [FoodLog] {
         let cal = Calendar.current
@@ -25,7 +26,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     if let goal = goals.first(where: { $0.period == .day }) {
-                        MacroProgressCard(goal: goal, consumed: consumed)
+                        MacroProgressCard(goal: goal, consumed: consumed, exerciseCalories: exerciseCalories)
                     } else {
                         NoGoalBanner()
                     }
@@ -42,6 +43,18 @@ struct HomeView: View {
                     }
                 }
             }
+            .task {
+                await loadExerciseCalories()
+            }
+        }
+    }
+
+    private func loadExerciseCalories() async {
+        do {
+            try await HealthKitService.shared.requestAuthorization()
+            exerciseCalories = try await HealthKitService.shared.activeEnergyBurnedToday()
+        } catch {
+            exerciseCalories = 0
         }
     }
 }

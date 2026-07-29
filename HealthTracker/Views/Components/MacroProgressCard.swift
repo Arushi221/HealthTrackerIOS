@@ -3,6 +3,9 @@ import SwiftUI
 struct MacroProgressCard: View {
     let goal: Goal
     let consumed: (calories: Double, protein: Double, carbs: Double, fat: Double)
+    var exerciseCalories: Double = 0
+
+    private var calorieTarget: Double { goal.targetCalories + exerciseCalories }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -12,10 +15,15 @@ struct MacroProgressCard: View {
             MacroBar(
                 label: "Calories",
                 value: consumed.calories,
-                target: goal.targetCalories,
+                target: calorieTarget,
                 color: .orange,
                 unit: "kcal"
             )
+            if exerciseCalories > 0 {
+                Text("+\(Int(exerciseCalories)) kcal earned from workouts")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
             MacroBar(
                 label: "Protein",
                 value: consumed.protein,

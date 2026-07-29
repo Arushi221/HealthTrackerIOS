@@ -20,6 +20,8 @@
 	<string>1</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan food barcodes</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Used to add calories burned from workouts to your daily calorie goal</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
