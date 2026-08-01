@@ -32,6 +32,8 @@ struct HomeView: View {
                     }
 
                     TodayMealsSection(logs: todayLogs)
+
+                    BrainFoodCard(logs: logs)
                 }
                 .padding()
             }

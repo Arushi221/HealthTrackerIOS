@@ -22,6 +22,8 @@ enum NutrientCatalog {
         TrackedNutrient(key: "vitamin_k", displayName: "Vitamin K", unit: "µg"),
         TrackedNutrient(key: "vitamin_b6", displayName: "Vitamin B6", unit: "mg"),
         TrackedNutrient(key: "vitamin_b12", displayName: "Vitamin B12", unit: "µg"),
-        TrackedNutrient(key: "folate", displayName: "Folate", unit: "µg")
+        TrackedNutrient(key: "folate", displayName: "Folate", unit: "µg"),
+        TrackedNutrient(key: "added_sugar", displayName: "Added Sugar", unit: "g"),
+        TrackedNutrient(key: "omega_3", displayName: "Omega-3", unit: "g")
     ]
 }

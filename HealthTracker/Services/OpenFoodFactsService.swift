@@ -59,6 +59,7 @@ struct OFFNutriments: Decodable {
     let fat100g: Double?
     let fiber100g: Double?
     let sugars100g: Double?
+    let addedSugars100g: Double?
     let saturatedFat100g: Double?
     let transFat100g: Double?
 
@@ -92,6 +93,7 @@ struct OFFNutriments: Decodable {
         case fat100g           = "fat_100g"
         case fiber100g         = "fiber_100g"
         case sugars100g        = "sugars_100g"
+        case addedSugars100g   = "added-sugars_100g"
         case saturatedFat100g  = "saturated-fat_100g"
         case transFat100g      = "trans-fat_100g"
         case sodium100g        = "sodium_100g"
@@ -227,6 +229,7 @@ actor OpenFoodFactsService {
         if let v = n?.transFat100g      { micronutrients["trans_fat"]       = v }
         if let v = n?.omega3100g        { micronutrients["omega_3"]         = v }
         if let v = n?.omega6100g        { micronutrients["omega_6"]         = v }
+        if let v = n?.addedSugars100g   { micronutrients["added_sugar"]     = v }
 
         // Minerals — OFF returns sodium in kg/100g, rest in g/100g; convert all to mg
         if let v = n?.sodium100g     { micronutrients["sodium"]      = v * 1000 }

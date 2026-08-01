@@ -35,11 +35,17 @@ struct AddGoalView: View {
                     .pickerStyle(.segmented)
                 }
 
-                Section("Macro Targets") {
+                Section {
                     MacroField(label: "Calories (kcal)", value: $calories)
                     MacroField(label: "Protein (g)", value: $protein)
                     MacroField(label: "Carbs (g)", value: $carbs)
                     MacroField(label: "Fat (g)", value: $fat)
+                } header: {
+                    Text("Macro Targets")
+                } footer: {
+                    if macroCalories > 0 {
+                        Text("Your macros add up to \(Int(macroCalories)) kcal. If that doesn't match your calorie target, we'll scale protein/carbs/fat proportionally to match when you save.")
+                    }
                 }
 
                 Section("Allergens to Exclude") {
@@ -73,21 +79,48 @@ struct AddGoalView: View {
         [calories, protein, carbs, fat].allSatisfy { Double($0) != nil }
     }
 
+    // Protein and carbs are 4 kcal/g, fat is 9 kcal/g
+    private var macroCalories: Double {
+        (Double(protein) ?? 0) * 4 + (Double(carbs) ?? 0) * 4 + (Double(fat) ?? 0) * 9
+    }
+
+    // If the entered macros don't add up to the calorie target, scale them
+    // proportionally (keeping their ratio to each other) so they do.
+    private func balancedMacros(targetCalories: Double) -> (protein: Double, carbs: Double, fat: Double) {
+        var proteinG = Double(protein) ?? 0
+        var carbsG = Double(carbs) ?? 0
+        var fatG = Double(fat) ?? 0
+
+        let macroCalories = proteinG * 4 + carbsG * 4 + fatG * 9
+        guard macroCalories > 0, abs(macroCalories - targetCalories) > 1 else {
+            return (proteinG, carbsG, fatG)
+        }
+
+        let scale = targetCalories / macroCalories
+        proteinG *= scale
+        carbsG *= scale
+        fatG *= scale
+        return (proteinG, carbsG, fatG)
+    }
+
     private func save() {
+        let targetCalories = Double(calories) ?? 0
+        let balanced = balancedMacros(targetCalories: targetCalories)
+
         if let existingGoal {
             existingGoal.period = period
-            existingGoal.targetCalories = Double(calories) ?? 0
-            existingGoal.targetProtein = Double(protein) ?? 0
-            existingGoal.targetCarbs = Double(carbs) ?? 0
-            existingGoal.targetFat = Double(fat) ?? 0
+            existingGoal.targetCalories = targetCalories
+            existingGoal.targetProtein = balanced.protein
+            existingGoal.targetCarbs = balanced.carbs
+            existingGoal.targetFat = balanced.fat
             existingGoal.excludedAllergens = excludedAllergens
         } else {
             let goal = Goal(
                 period: period,
-                targetCalories: Double(calories) ?? 0,
-                targetProtein: Double(protein) ?? 0,
-                targetCarbs: Double(carbs) ?? 0,
-                targetFat: Double(fat) ?? 0,
+                targetCalories: targetCalories,
+                targetProtein: balanced.protein,
+                targetCarbs: balanced.carbs,
+                targetFat: balanced.fat,
                 excludedAllergens: excludedAllergens
             )
             context.insert(goal)
