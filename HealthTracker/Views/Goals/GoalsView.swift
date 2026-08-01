@@ -67,6 +67,12 @@ struct GoalsView: View {
                         .foregroundStyle(.blue)
                     }
                 }
+
+                Section("Health") {
+                    NavigationLink("Lab Results") {
+                        LabResultsView()
+                    }
+                }
             }
             .navigationTitle("Goals")
             .toolbar {

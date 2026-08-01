@@ -1,28 +1,7 @@
 import Foundation
 
-private struct AnthropicContentBlock: Decodable {
-    let type: String
-    let text: String?
-}
-
-private struct AnthropicMessageResponse: Decodable {
-    let content: [AnthropicContentBlock]
-}
-
 private struct BrainHealthyFoodsPayload: Decodable {
     let foods: [String]
-}
-
-enum BrainFoodError: Error, LocalizedError {
-    case noAPIKey
-    case emptyResponse
-
-    var errorDescription: String? {
-        switch self {
-        case .noAPIKey: return "Add your Anthropic API key to Secrets.swift."
-        case .emptyResponse: return "No response from Claude."
-        }
-    }
 }
 
 // Asks Claude for a list of well-known brain-healthy foods.
@@ -39,7 +18,7 @@ actor BrainFoodService {
 
     func fetchBrainHealthyFoods() async throws -> [String] {
         guard !Secrets.anthropicAPIKey.isEmpty, Secrets.anthropicAPIKey != "PASTE_YOUR_KEY_HERE" else {
-            throw BrainFoodError.noAPIKey
+            throw AnthropicServiceError.noAPIKey
         }
 
         var request = URLRequest(url: URL(string: "https://api.anthropic.com/v1/messages")!)
@@ -76,7 +55,7 @@ actor BrainFoodService {
 
         guard let text = response.content.first(where: { $0.type == "text" })?.text,
               let textData = text.data(using: .utf8) else {
-            throw BrainFoodError.emptyResponse
+            throw AnthropicServiceError.emptyResponse
         }
 
         return try JSONDecoder().decode(BrainHealthyFoodsPayload.self, from: textData).foods

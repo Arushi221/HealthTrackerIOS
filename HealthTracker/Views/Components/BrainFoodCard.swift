@@ -69,7 +69,7 @@ struct BrainFoodCard: View {
             BrainFoodCache.save(foods)
             keywords = foods
         } catch {
-            errorMessage = (error as? BrainFoodError)?.errorDescription ?? "Couldn't load brain-healthy foods."
+            errorMessage = (error as? AnthropicServiceError)?.errorDescription ?? "Couldn't load brain-healthy foods."
         }
         isLoading = false
     }
