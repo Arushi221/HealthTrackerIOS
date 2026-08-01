@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4353E87842E1DE019B57287E /* FoodLog.swift */; };
+		AC05BD18EB5B9F96494B86D8 /* EditNutrientGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3926FB30336B8156E725B /* EditNutrientGoalView.swift */; };
 		5F82F5F5F0BAB9BBD4D07EA3 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84736134C12DB15B74DA35DE /* HealthKitService.swift */; };
 		410F922E2FDB73B0510780A0 /* FoodSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17C003DD582CD2FA28DBA5DC /* FoodSearchView.swift */; };
 		D47DC1C9AF496407E71511D9 /* NutrientCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A4B203C1BA5922F99BB13 /* NutrientCatalog.swift */; };
@@ -39,6 +40,7 @@
 
 /* Begin PBXFileReference section */
 		01563E12C1F8267343253B4B /* USDAService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDAService.swift; sourceTree = "<group>"; };
+		5DE3926FB30336B8156E725B /* EditNutrientGoalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditNutrientGoalView.swift; sourceTree = "<group>"; };
 		84736134C12DB15B74DA35DE /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		03DE791C28BBCCDBDB53387C /* HealthTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HealthTracker.entitlements; sourceTree = "<group>"; };
 		17C003DD582CD2FA28DBA5DC /* FoodSearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodSearchView.swift; sourceTree = "<group>"; };
@@ -148,6 +150,7 @@
 			children = (
 				9D939D7DC66776EDBCDC0639 /* AddGoalView.swift */,
 				19BFADD40954FA428E1D1542 /* AddNutrientGoalView.swift */,
+				5DE3926FB30336B8156E725B /* EditNutrientGoalView.swift */,
 				D93FE112FAC0311E4A82F2C2 /* GoalsView.swift */,
 			);
 			path = Goals;
@@ -269,6 +272,7 @@
 			files = (
 				719E2329C08AEE18BB71AA6B /* AddFoodToMealView.swift in Sources */,
 				58282CB5D17193A11879E8BD /* AddGoalView.swift in Sources */,
+				AC05BD18EB5B9F96494B86D8 /* EditNutrientGoalView.swift in Sources */,
 				5F82F5F5F0BAB9BBD4D07EA3 /* HealthKitService.swift in Sources */,
 				410F922E2FDB73B0510780A0 /* FoodSearchView.swift in Sources */,
 				D47DC1C9AF496407E71511D9 /* NutrientCatalog.swift in Sources */,

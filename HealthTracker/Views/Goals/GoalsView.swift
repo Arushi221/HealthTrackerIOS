@@ -8,6 +8,8 @@ struct GoalsView: View {
     @Query private var logs: [FoodLog]
     @State private var showingAddGoal = false
     @State private var showingAddNutrientGoal = false
+    @State private var editingGoal: Goal?
+    @State private var editingNutrientGoal: NutrientGoal?
 
     var body: some View {
         NavigationStack {
@@ -16,6 +18,19 @@ struct GoalsView: View {
                     ForEach(GoalPeriod.allCases, id: \.self) { period in
                         if let goal = goals.first(where: { $0.period == period }) {
                             GoalRow(goal: goal)
+                                .swipeActions(edge: .trailing) {
+                                    Button(role: .destructive) {
+                                        context.delete(goal)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                    Button {
+                                        editingGoal = goal
+                                    } label: {
+                                        Label("Edit", systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
+                                }
                         } else {
                             Button("Set \(period.rawValue) Goal") {
                                 showingAddGoal = true
@@ -30,11 +45,19 @@ struct GoalsView: View {
                         NutrientProgressCard(goal: goal, logs: logs)
                             .listRowInsets(EdgeInsets())
                             .listRowBackground(Color.clear)
-                    }
-                    .onDelete { offsets in
-                        for index in offsets {
-                            context.delete(nutrientGoals[index])
-                        }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    context.delete(goal)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                Button {
+                                    editingNutrientGoal = goal
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
                     }
 
                     if nutrientGoals.count < NutrientCatalog.all.count {
@@ -58,6 +81,12 @@ struct GoalsView: View {
             }
             .sheet(isPresented: $showingAddNutrientGoal) {
                 AddNutrientGoalView()
+            }
+            .sheet(item: $editingGoal) { goal in
+                AddGoalView(existingGoal: goal)
+            }
+            .sheet(item: $editingNutrientGoal) { goal in
+                EditNutrientGoalView(goal: goal)
             }
         }
     }

@@ -5,13 +5,25 @@ struct AddGoalView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
 
-    @State private var period: GoalPeriod = .day
-    @State private var calories: String = ""
-    @State private var protein: String = ""
-    @State private var carbs: String = ""
-    @State private var fat: String = ""
-    @State private var excludedAllergens: [String] = []
+    let existingGoal: Goal?
+
+    @State private var period: GoalPeriod
+    @State private var calories: String
+    @State private var protein: String
+    @State private var carbs: String
+    @State private var fat: String
+    @State private var excludedAllergens: [String]
     @State private var allergenInput: String = ""
+
+    init(existingGoal: Goal? = nil) {
+        self.existingGoal = existingGoal
+        _period = State(initialValue: existingGoal?.period ?? .day)
+        _calories = State(initialValue: existingGoal.map { String(Int($0.targetCalories)) } ?? "")
+        _protein = State(initialValue: existingGoal.map { String(Int($0.targetProtein)) } ?? "")
+        _carbs = State(initialValue: existingGoal.map { String(Int($0.targetCarbs)) } ?? "")
+        _fat = State(initialValue: existingGoal.map { String(Int($0.targetFat)) } ?? "")
+        _excludedAllergens = State(initialValue: existingGoal?.excludedAllergens ?? [])
+    }
 
     var body: some View {
         NavigationStack {
@@ -45,7 +57,7 @@ struct AddGoalView: View {
                     .onDelete { excludedAllergens.remove(atOffsets: $0) }
                 }
             }
-            .navigationTitle("New Goal")
+            .navigationTitle(existingGoal == nil ? "New Goal" : "Edit Goal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
@@ -62,15 +74,24 @@ struct AddGoalView: View {
     }
 
     private func save() {
-        let goal = Goal(
-            period: period,
-            targetCalories: Double(calories) ?? 0,
-            targetProtein: Double(protein) ?? 0,
-            targetCarbs: Double(carbs) ?? 0,
-            targetFat: Double(fat) ?? 0,
-            excludedAllergens: excludedAllergens
-        )
-        context.insert(goal)
+        if let existingGoal {
+            existingGoal.period = period
+            existingGoal.targetCalories = Double(calories) ?? 0
+            existingGoal.targetProtein = Double(protein) ?? 0
+            existingGoal.targetCarbs = Double(carbs) ?? 0
+            existingGoal.targetFat = Double(fat) ?? 0
+            existingGoal.excludedAllergens = excludedAllergens
+        } else {
+            let goal = Goal(
+                period: period,
+                targetCalories: Double(calories) ?? 0,
+                targetProtein: Double(protein) ?? 0,
+                targetCarbs: Double(carbs) ?? 0,
+                targetFat: Double(fat) ?? 0,
+                excludedAllergens: excludedAllergens
+            )
+            context.insert(goal)
+        }
         dismiss()
     }
 }
