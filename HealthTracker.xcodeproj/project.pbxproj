@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4353E87842E1DE019B57287E /* FoodLog.swift */; };
+		EA99BD6519522EB911714E77 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 35AA4ACFA59D3695AEB61FCB /* Assets.xcassets */; };
 		2C3AAA8313D03379F16E4062 /* FoodCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E240C41E2D6932F7C2EB71 /* FoodCategory.swift */; };
 		F8A097F4539CB090574F4F22 /* FoodCategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A124C349A47FAA8280A704B /* FoodCategoryService.swift */; };
 		227920CB3C3D86C7E29F6959 /* FoodCategoryGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52310AE1A1C0A09B9661F74 /* FoodCategoryGoal.swift */; };
@@ -54,6 +55,7 @@
 
 /* Begin PBXFileReference section */
 		01563E12C1F8267343253B4B /* USDAService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDAService.swift; sourceTree = "<group>"; };
+		35AA4ACFA59D3695AEB61FCB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		43E240C41E2D6932F7C2EB71 /* FoodCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategory.swift; sourceTree = "<group>"; };
 		5A124C349A47FAA8280A704B /* FoodCategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryService.swift; sourceTree = "<group>"; };
 		C52310AE1A1C0A09B9661F74 /* FoodCategoryGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryGoal.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				C5E1835B5C8F30F9D4BD65B4 /* HealthTrackerApp.swift */,
 				03DE791C28BBCCDBDB53387C /* HealthTracker.entitlements */,
 				6D98CF1A3E203B0805534D5C /* Info.plist */,
+				35AA4ACFA59D3695AEB61FCB /* Assets.xcassets */,
 				06FD1DFEC9BD2CF68FDFBAC1 /* Models */,
 				FADE365DE14A4D9A3BB73A6D /* Services */,
 				EC6A16C9126AB2D87F1ED9DF /* Utilities */,
@@ -302,6 +305,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C8EB1204B26CA369410E7A4 /* Secrets.swift.example in Resources */,
+				EA99BD6519522EB911714E77 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
