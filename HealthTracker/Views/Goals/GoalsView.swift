@@ -5,11 +5,14 @@ struct GoalsView: View {
     @Environment(\.modelContext) private var context
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
     @Query(filter: #Predicate<NutrientGoal> { $0.isActive }) private var nutrientGoals: [NutrientGoal]
+    @Query(filter: #Predicate<FoodCategoryGoal> { $0.isActive }) private var foodCategoryGoals: [FoodCategoryGoal]
     @Query private var logs: [FoodLog]
     @State private var showingAddGoal = false
     @State private var showingAddNutrientGoal = false
     @State private var editingGoal: Goal?
     @State private var editingNutrientGoal: NutrientGoal?
+    @State private var addingCategoryGoal: FoodCategory?
+    @State private var editingCategoryGoal: FoodCategoryGoal?
 
     var body: some View {
         NavigationStack {
@@ -68,6 +71,39 @@ struct GoalsView: View {
                     }
                 }
 
+                Section("Food Categories") {
+                    ForEach(FoodCategoryCatalog.all) { category in
+                        if let goal = foodCategoryGoals.first(where: { $0.categoryKey == category.key }) {
+                            FoodCategoryGoalCard(
+                                goal: goal,
+                                category: category,
+                                logs: logs,
+                                keywords: FoodCategoryCache.foods(for: category)
+                            )
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    context.delete(goal)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                Button {
+                                    editingCategoryGoal = goal
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
+                        } else {
+                            Button("Set \(category.displayName) Goal") {
+                                addingCategoryGoal = category
+                            }
+                            .foregroundStyle(.blue)
+                        }
+                    }
+                }
+
                 Section("Health") {
                     NavigationLink("Lab Results") {
                         LabResultsView()
@@ -93,6 +129,14 @@ struct GoalsView: View {
             }
             .sheet(item: $editingNutrientGoal) { goal in
                 EditNutrientGoalView(goal: goal)
+            }
+            .sheet(item: $addingCategoryGoal) { category in
+                AddFoodCategoryGoalView(category: category)
+            }
+            .sheet(item: $editingCategoryGoal) { goal in
+                if let category = FoodCategoryCatalog.all.first(where: { $0.key == goal.categoryKey }) {
+                    AddFoodCategoryGoalView(category: category, existingGoal: goal)
+                }
             }
         }
     }

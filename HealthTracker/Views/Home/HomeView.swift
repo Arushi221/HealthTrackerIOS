@@ -3,9 +3,16 @@ import SwiftData
 
 struct HomeView: View {
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
+    @Query(filter: #Predicate<FoodCategoryGoal> { $0.isActive }) private var foodCategoryGoals: [FoodCategoryGoal]
     @Query private var logs: [FoodLog]
     @State private var exerciseCalories: Double = 0
     @State private var selectedDate: Date = Date()
+
+    private var trackedCategories: [FoodCategory] {
+        FoodCategoryCatalog.all.filter { category in
+            foodCategoryGoals.contains { $0.categoryKey == category.key }
+        }
+    }
 
     private var dayLogs: [FoodLog] {
         let cal = Calendar.current
@@ -36,7 +43,9 @@ struct HomeView: View {
 
                     TodayMealsSection(logs: dayLogs, date: selectedDate)
 
-                    BrainFoodCard(logs: logs)
+                    ForEach(trackedCategories) { category in
+                        FoodCategoryCard(category: category, logs: logs)
+                    }
                 }
                 .padding()
             }

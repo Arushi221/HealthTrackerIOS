@@ -1,13 +1,14 @@
 import Foundation
 
-private struct BrainHealthyFoodsPayload: Decodable {
+private struct FoodListPayload: Decodable {
     let foods: [String]
 }
 
-// Asks Claude for a list of well-known brain-healthy foods.
-// Uses Haiku — this is a short, simple list-generation task, not worth a bigger model.
-actor BrainFoodService {
-    static let shared = BrainFoodService()
+// Asks Claude for a keyword list of foods for a given category (brain health,
+// thyroid support, etc). Uses Haiku — this is a short, simple list-generation
+// task, not worth a bigger model.
+actor FoodCategoryService {
+    static let shared = FoodCategoryService()
     private let session: URLSession
 
     private init() {
@@ -16,7 +17,7 @@ actor BrainFoodService {
         self.session = URLSession(configuration: config)
     }
 
-    func fetchBrainHealthyFoods() async throws -> [String] {
+    func fetchFoods(for category: FoodCategory) async throws -> [String] {
         guard !Secrets.anthropicAPIKey.isEmpty, Secrets.anthropicAPIKey != "PASTE_YOUR_KEY_HERE" else {
             throw AnthropicServiceError.noAPIKey
         }
@@ -27,13 +28,13 @@ actor BrainFoodService {
         request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
         request.setValue("application/json", forHTTPHeaderField: "content-type")
 
+        let userPrompt = "List 25 \(category.promptTopic) as short lowercase keywords. No brand names."
+
         let body: [String: Any] = [
             "model": "claude-haiku-4-5",
             "max_tokens": 1024,
             "system": "You are a nutrition assistant.",
-            "messages": [
-                ["role": "user", "content": "List 25 well-known brain-healthy foods (e.g. salmon, walnuts, blueberries, leafy greens) as short lowercase keywords. No brand names."]
-            ],
+            "messages": [["role": "user", "content": userPrompt]],
             "output_config": [
                 "format": [
                     "type": "json_schema",
@@ -58,6 +59,6 @@ actor BrainFoodService {
             throw AnthropicServiceError.emptyResponse
         }
 
-        return try JSONDecoder().decode(BrainHealthyFoodsPayload.self, from: textData).foods
+        return try JSONDecoder().decode(FoodListPayload.self, from: textData).foods
     }
 }

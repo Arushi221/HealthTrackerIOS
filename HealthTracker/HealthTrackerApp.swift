@@ -14,7 +14,8 @@ struct HealthTrackerApp: App {
                 Goal.self,
                 FoodLog.self,
                 NutrientGoal.self,
-                LabResult.self
+                LabResult.self,
+                FoodCategoryGoal.self
             )
         } catch {
             fatalError("Failed to create SwiftData container: \(error)")

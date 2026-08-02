@@ -14,6 +14,7 @@ struct AddGoalView: View {
     @State private var fat: String
     @State private var excludedAllergens: [String]
     @State private var allergenInput: String = ""
+    @State private var isAdjusting = false
 
     init(existingGoal: Goal? = nil) {
         self.existingGoal = existingGoal
@@ -37,15 +38,17 @@ struct AddGoalView: View {
 
                 Section {
                     MacroField(label: "Calories (kcal)", value: $calories)
+                        .onChange(of: calories) { _, _ in rescaleAllMacros() }
                     MacroField(label: "Protein (g)", value: $protein)
+                        .onChange(of: protein) { _, _ in rebalance(changed: .protein) }
                     MacroField(label: "Carbs (g)", value: $carbs)
+                        .onChange(of: carbs) { _, _ in rebalance(changed: .carbs) }
                     MacroField(label: "Fat (g)", value: $fat)
+                        .onChange(of: fat) { _, _ in rebalance(changed: .fat) }
                 } header: {
                     Text("Macro Targets")
                 } footer: {
-                    if macroCalories > 0 {
-                        Text("Your macros add up to \(Int(macroCalories)) kcal. If that doesn't match your calorie target, we'll scale protein/carbs/fat proportionally to match when you save.")
-                    }
+                    Text("Editing any macro automatically adjusts the others to keep them adding up to your calorie target.")
                 }
 
                 Section("Allergens to Exclude") {
@@ -82,6 +85,70 @@ struct AddGoalView: View {
     // Protein and carbs are 4 kcal/g, fat is 9 kcal/g
     private var macroCalories: Double {
         (Double(protein) ?? 0) * 4 + (Double(carbs) ?? 0) * 4 + (Double(fat) ?? 0) * 9
+    }
+
+    private enum MacroKind { case protein, carbs, fat }
+
+    // When one macro changes, rescale the other two (preserving their ratio to
+    // each other) so all three keep adding up to the calorie target — live,
+    // not just on save.
+    private func rebalance(changed: MacroKind) {
+        guard !isAdjusting, let cal = Double(calories), cal > 0 else { return }
+
+        let p = Double(protein) ?? 0
+        let c = Double(carbs) ?? 0
+        let f = Double(fat) ?? 0
+
+        let changedCalories: Double
+        let otherTotal: Double
+        switch changed {
+        case .protein: changedCalories = p * 4; otherTotal = c * 4 + f * 9
+        case .carbs:   changedCalories = c * 4; otherTotal = p * 4 + f * 9
+        case .fat:     changedCalories = f * 9; otherTotal = p * 4 + c * 4
+        }
+
+        let remaining = max(0, cal - changedCalories)
+        guard otherTotal > 0 else { return }
+        let scale = remaining / otherTotal
+
+        isAdjusting = true
+        switch changed {
+        case .protein:
+            carbs = String(Int((c * scale).rounded()))
+            fat = String(Int((f * scale).rounded()))
+        case .carbs:
+            protein = String(Int((p * scale).rounded()))
+            fat = String(Int((f * scale).rounded()))
+        case .fat:
+            protein = String(Int((p * scale).rounded()))
+            carbs = String(Int((c * scale).rounded()))
+        }
+        isAdjusting = false
+    }
+
+    // When the calorie target changes, rescale all three macros to match it,
+    // keeping their existing ratio to each other.
+    private func rescaleAllMacros() {
+        guard !isAdjusting, let cal = Double(calories), cal > 0 else { return }
+
+        let p = Double(protein) ?? 0
+        let c = Double(carbs) ?? 0
+        let f = Double(fat) ?? 0
+        let total = p * 4 + c * 4 + f * 9
+
+        isAdjusting = true
+        if total > 0 {
+            let scale = cal / total
+            protein = String(Int((p * scale).rounded()))
+            carbs = String(Int((c * scale).rounded()))
+            fat = String(Int((f * scale).rounded()))
+        } else {
+            // No macros set yet — seed a standard 30/40/30 protein/carbs/fat split
+            protein = String(Int((cal * 0.30 / 4).rounded()))
+            carbs = String(Int((cal * 0.40 / 4).rounded()))
+            fat = String(Int((cal * 0.30 / 9).rounded()))
+        }
+        isAdjusting = false
     }
 
     // If the entered macros don't add up to the calorie target, scale them

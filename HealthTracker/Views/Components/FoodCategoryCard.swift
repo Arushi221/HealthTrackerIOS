@@ -1,11 +1,18 @@
 import SwiftUI
 
-struct BrainFoodCard: View {
+struct FoodCategoryCard: View {
+    let category: FoodCategory
     let logs: [FoodLog]
 
-    @State private var keywords: [String] = BrainFoodCache.foods
+    @State private var keywords: [String]
     @State private var isLoading = false
     @State private var errorMessage: String?
+
+    init(category: FoodCategory, logs: [FoodLog]) {
+        self.category = category
+        self.logs = logs
+        _keywords = State(initialValue: FoodCategoryCache.foods(for: category))
+    }
 
     private var thisWeekLogs: [FoodLog] {
         guard let weekAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else { return [] }
@@ -13,13 +20,13 @@ struct BrainFoodCard: View {
     }
 
     private var matches: [FoodLog] {
-        thisWeekLogs.brainHealthyMatches(against: keywords)
+        thisWeekLogs.matching(keywords: keywords)
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Brain Health").font(.headline)
+                Text(category.displayName).font(.headline)
                 Spacer()
                 Button {
                     Task { await refresh() }
@@ -34,11 +41,11 @@ struct BrainFoodCard: View {
             }
 
             if keywords.isEmpty {
-                Text("Tap refresh to load a brain-healthy food list from Claude.")
+                Text("Tap refresh to load a food list from Claude.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
-                Text("\(matches.count) brain-healthy \(matches.count == 1 ? "food" : "foods") logged this week")
+                Text("\(matches.count) matching \(matches.count == 1 ? "food" : "foods") logged this week")
                     .font(.subheadline)
                 if !matches.isEmpty {
                     Text(matches.map { $0.meal.name }.joined(separator: ", "))
@@ -57,7 +64,7 @@ struct BrainFoodCard: View {
         .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .task {
-            if BrainFoodCache.needsRefresh { await refresh() }
+            if FoodCategoryCache.needsRefresh(for: category) { await refresh() }
         }
     }
 
@@ -65,11 +72,11 @@ struct BrainFoodCard: View {
         isLoading = true
         errorMessage = nil
         do {
-            let foods = try await BrainFoodService.shared.fetchBrainHealthyFoods()
-            BrainFoodCache.save(foods)
+            let foods = try await FoodCategoryService.shared.fetchFoods(for: category)
+            FoodCategoryCache.save(foods, for: category)
             keywords = foods
         } catch {
-            errorMessage = (error as? AnthropicServiceError)?.errorDescription ?? "Couldn't load brain-healthy foods."
+            errorMessage = (error as? AnthropicServiceError)?.errorDescription ?? "Couldn't load foods."
         }
         isLoading = false
     }

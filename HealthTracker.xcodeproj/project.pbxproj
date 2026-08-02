@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		01F488FA02872418DEEB4EA3 /* FoodLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4353E87842E1DE019B57287E /* FoodLog.swift */; };
+		2C3AAA8313D03379F16E4062 /* FoodCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43E240C41E2D6932F7C2EB71 /* FoodCategory.swift */; };
+		F8A097F4539CB090574F4F22 /* FoodCategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A124C349A47FAA8280A704B /* FoodCategoryService.swift */; };
+		227920CB3C3D86C7E29F6959 /* FoodCategoryGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52310AE1A1C0A09B9661F74 /* FoodCategoryGoal.swift */; };
+		975F7AC5B9C1FD4BE253DC37 /* FoodCategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9872043648486AE5EB5E5 /* FoodCategoryCard.swift */; };
+		D24086E98A319579909E89FE /* FoodCategoryGoalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EEB4603473FC26677F634FF /* FoodCategoryGoalCard.swift */; };
+		D360CF17E0ACDAB83417029A /* AddFoodCategoryGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DB22F01686CEA97CD62111 /* AddFoodCategoryGoalView.swift */; };
 		D07FC51CE71D4A72DF7DB7EF /* AnthropicAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40832DED0CD3B4576E6D3CC1 /* AnthropicAPI.swift */; };
 		56818AD78786135162656990 /* NutrientGoalSuggestionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954386D869C76977C55F9166 /* NutrientGoalSuggestionService.swift */; };
 		234F8E23C6C7489086F8C2FD /* SuggestedNutrientGoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46B5A34F81D10E3A93C737CA /* SuggestedNutrientGoalsView.swift */; };
@@ -16,9 +22,6 @@
 		8C4EA392176FDEB9B5004093 /* AddLabResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30CE0C48CD8A0B5079815E0A /* AddLabResultView.swift */; };
 		B2C16BEB52BA92C43BCC7D79 /* LabResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C82649557B5D6648834D8AEA /* LabResultsView.swift */; };
 		5B0FA42E38D395EBC22386C2 /* LabResultDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 741CA7CF7720C92F7E852035 /* LabResultDetailView.swift */; };
-		9125CEB3A98047BFEB65333B /* BrainFoodService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35D9EDDAFDEDF3316B3B4128 /* BrainFoodService.swift */; };
-		270A2DE26F6A14A229DF2E76 /* BrainFood.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FBC55D09F11B8E003CC4FD /* BrainFood.swift */; };
-		76B4301907EEC3C0071A25DA /* BrainFoodCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE22E150B6C3E03A9587AF6D /* BrainFoodCard.swift */; };
 		AC05BD18EB5B9F96494B86D8 /* EditNutrientGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3926FB30336B8156E725B /* EditNutrientGoalView.swift */; };
 		5F82F5F5F0BAB9BBD4D07EA3 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84736134C12DB15B74DA35DE /* HealthKitService.swift */; };
 		410F922E2FDB73B0510780A0 /* FoodSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17C003DD582CD2FA28DBA5DC /* FoodSearchView.swift */; };
@@ -51,6 +54,12 @@
 
 /* Begin PBXFileReference section */
 		01563E12C1F8267343253B4B /* USDAService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = USDAService.swift; sourceTree = "<group>"; };
+		43E240C41E2D6932F7C2EB71 /* FoodCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategory.swift; sourceTree = "<group>"; };
+		5A124C349A47FAA8280A704B /* FoodCategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryService.swift; sourceTree = "<group>"; };
+		C52310AE1A1C0A09B9661F74 /* FoodCategoryGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryGoal.swift; sourceTree = "<group>"; };
+		61E9872043648486AE5EB5E5 /* FoodCategoryCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryCard.swift; sourceTree = "<group>"; };
+		9EEB4603473FC26677F634FF /* FoodCategoryGoalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryGoalCard.swift; sourceTree = "<group>"; };
+		05DB22F01686CEA97CD62111 /* AddFoodCategoryGoalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFoodCategoryGoalView.swift; sourceTree = "<group>"; };
 		40832DED0CD3B4576E6D3CC1 /* AnthropicAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnthropicAPI.swift; sourceTree = "<group>"; };
 		954386D869C76977C55F9166 /* NutrientGoalSuggestionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutrientGoalSuggestionService.swift; sourceTree = "<group>"; };
 		46B5A34F81D10E3A93C737CA /* SuggestedNutrientGoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuggestedNutrientGoalsView.swift; sourceTree = "<group>"; };
@@ -59,9 +68,6 @@
 		30CE0C48CD8A0B5079815E0A /* AddLabResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddLabResultView.swift; sourceTree = "<group>"; };
 		C82649557B5D6648834D8AEA /* LabResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabResultsView.swift; sourceTree = "<group>"; };
 		741CA7CF7720C92F7E852035 /* LabResultDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabResultDetailView.swift; sourceTree = "<group>"; };
-		35D9EDDAFDEDF3316B3B4128 /* BrainFoodService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrainFoodService.swift; sourceTree = "<group>"; };
-		08FBC55D09F11B8E003CC4FD /* BrainFood.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrainFood.swift; sourceTree = "<group>"; };
-		FE22E150B6C3E03A9587AF6D /* BrainFoodCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrainFoodCard.swift; sourceTree = "<group>"; };
 		5DE3926FB30336B8156E725B /* EditNutrientGoalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditNutrientGoalView.swift; sourceTree = "<group>"; };
 		84736134C12DB15B74DA35DE /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		03DE791C28BBCCDBDB53387C /* HealthTracker.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HealthTracker.entitlements; sourceTree = "<group>"; };
@@ -107,7 +113,8 @@
 		06FD1DFEC9BD2CF68FDFBAC1 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				08FBC55D09F11B8E003CC4FD /* BrainFood.swift */,
+				43E240C41E2D6932F7C2EB71 /* FoodCategory.swift */,
+				C52310AE1A1C0A09B9661F74 /* FoodCategoryGoal.swift */,
 				08C894C1870F25A184A62BE8 /* LabResult.swift */,
 				5E4DDA391E582928D60552DF /* LabTestCatalog.swift */,
 				1B76F8313018606600611817 /* NutrientProgress.swift */,
@@ -124,7 +131,8 @@
 		3A9A249DF46FD2BE57918F3E /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				FE22E150B6C3E03A9587AF6D /* BrainFoodCard.swift */,
+				61E9872043648486AE5EB5E5 /* FoodCategoryCard.swift */,
+				9EEB4603473FC26677F634FF /* FoodCategoryGoalCard.swift */,
 				9809F0C216CBF8755FDA6A26 /* MacroProgressCard.swift */,
 				26F75F47365B9F768865880A /* NutrientProgressCard.swift */,
 				967331C44D7C971CBB10BF4A /* NoGoalBanner.swift */,
@@ -175,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				9D939D7DC66776EDBCDC0639 /* AddGoalView.swift */,
+				05DB22F01686CEA97CD62111 /* AddFoodCategoryGoalView.swift */,
 				19BFADD40954FA428E1D1542 /* AddNutrientGoalView.swift */,
 				30CE0C48CD8A0B5079815E0A /* AddLabResultView.swift */,
 				5DE3926FB30336B8156E725B /* EditNutrientGoalView.swift */,
@@ -223,8 +232,8 @@
 			isa = PBXGroup;
 			children = (
 				40832DED0CD3B4576E6D3CC1 /* AnthropicAPI.swift */,
-				35D9EDDAFDEDF3316B3B4128 /* BrainFoodService.swift */,
 				F8F309DF5E5978563154E8E6 /* FoodLookupService.swift */,
+				5A124C349A47FAA8280A704B /* FoodCategoryService.swift */,
 				84736134C12DB15B74DA35DE /* HealthKitService.swift */,
 				954386D869C76977C55F9166 /* NutrientGoalSuggestionService.swift */,
 				D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */,
@@ -305,6 +314,12 @@
 			files = (
 				719E2329C08AEE18BB71AA6B /* AddFoodToMealView.swift in Sources */,
 				58282CB5D17193A11879E8BD /* AddGoalView.swift in Sources */,
+				D360CF17E0ACDAB83417029A /* AddFoodCategoryGoalView.swift in Sources */,
+				2C3AAA8313D03379F16E4062 /* FoodCategory.swift in Sources */,
+				F8A097F4539CB090574F4F22 /* FoodCategoryService.swift in Sources */,
+				227920CB3C3D86C7E29F6959 /* FoodCategoryGoal.swift in Sources */,
+				975F7AC5B9C1FD4BE253DC37 /* FoodCategoryCard.swift in Sources */,
+				D24086E98A319579909E89FE /* FoodCategoryGoalCard.swift in Sources */,
 				D07FC51CE71D4A72DF7DB7EF /* AnthropicAPI.swift in Sources */,
 				56818AD78786135162656990 /* NutrientGoalSuggestionService.swift in Sources */,
 				234F8E23C6C7489086F8C2FD /* SuggestedNutrientGoalsView.swift in Sources */,
@@ -313,9 +328,6 @@
 				661D57DE8CF5A2CCA23031D9 /* LabTestCatalog.swift in Sources */,
 				B2C16BEB52BA92C43BCC7D79 /* LabResultsView.swift in Sources */,
 				5B0FA42E38D395EBC22386C2 /* LabResultDetailView.swift in Sources */,
-				270A2DE26F6A14A229DF2E76 /* BrainFood.swift in Sources */,
-				76B4301907EEC3C0071A25DA /* BrainFoodCard.swift in Sources */,
-				9125CEB3A98047BFEB65333B /* BrainFoodService.swift in Sources */,
 				AC05BD18EB5B9F96494B86D8 /* EditNutrientGoalView.swift in Sources */,
 				5F82F5F5F0BAB9BBD4D07EA3 /* HealthKitService.swift in Sources */,
 				410F922E2FDB73B0510780A0 /* FoodSearchView.swift in Sources */,

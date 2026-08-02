@@ -1,7 +1,7 @@
 import Foundation
 
 // Shared response shape for calls to the Anthropic Messages API — used by
-// any service that talks to Claude (BrainFoodService, NutrientGoalSuggestionService, ...)
+// any service that talks to Claude (FoodCategoryService, NutrientGoalSuggestionService, ...)
 struct AnthropicContentBlock: Decodable {
     let type: String
     let text: String?
