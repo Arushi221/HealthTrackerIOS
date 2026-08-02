@@ -22,10 +22,11 @@ actor HealthKitService {
         try await store.requestAuthorization(toShare: [], read: [activeEnergyType])
     }
 
-    // Sum of Apple Watch active energy (workouts + general activity) since midnight
-    func activeEnergyBurnedToday() async throws -> Double {
-        let startOfDay = Calendar.current.startOfDay(for: Date())
-        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictStartDate)
+    // Sum of Apple Watch active energy (workouts + general activity) for the given day
+    func activeEnergyBurned(on date: Date) async throws -> Double {
+        let calendar = Calendar.current
+        guard let interval = calendar.dateInterval(of: .day, for: date) else { return 0 }
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end, options: .strictStartDate)
 
         return try await withCheckedThrowingContinuation { continuation in
             let query = HKStatisticsQuery(

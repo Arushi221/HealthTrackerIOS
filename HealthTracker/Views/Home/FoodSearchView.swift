@@ -3,6 +3,7 @@ import SwiftUI
 struct FoodSearchView: View {
     @Environment(\.dismiss) private var dismiss
     let mealType: MealType
+    let date: Date
 
     @State private var query: String = ""
     @State private var results: [FoodProduct] = []
@@ -45,7 +46,7 @@ struct FoodSearchView: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
             }
             .sheet(item: $selectedProduct) { product in
-                AddFoodToMealView(product: product, presetMealType: mealType, onSave: { dismiss() })
+                AddFoodToMealView(product: product, presetMealType: mealType, date: date, onSave: { dismiss() })
             }
         }
     }

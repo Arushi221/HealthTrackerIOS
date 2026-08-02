@@ -8,14 +8,16 @@ struct AddFoodToMealView: View {
 
     let product: FoodProduct
     let presetMealType: MealType?
+    let date: Date
     let onSave: () -> Void
 
     @State private var mealType: MealType
     @State private var servings: String = "1"
 
-    init(product: FoodProduct, presetMealType: MealType? = nil, onSave: @escaping () -> Void) {
+    init(product: FoodProduct, presetMealType: MealType? = nil, date: Date = Date(), onSave: @escaping () -> Void) {
         self.product = product
         self.presetMealType = presetMealType
+        self.date = date
         self.onSave = onSave
         _mealType = State(initialValue: presetMealType ?? .lunch)
     }
@@ -69,11 +71,11 @@ struct AddFoodToMealView: View {
         let item = MealItem(product: product, servings: s)
         context.insert(item)
 
-        let meal = Meal(name: product.name, mealType: mealType, items: [item])
+        let meal = Meal(name: product.name, mealType: mealType, items: [item], date: date)
         context.insert(meal)
 
         let goalId = goals.first(where: { $0.period == .day })?.id ?? UUID()
-        let entry = FoodLog(meal: meal, goalId: goalId)
+        let entry = FoodLog(meal: meal, goalId: goalId, loggedAt: date)
         context.insert(entry)
 
         onSave()

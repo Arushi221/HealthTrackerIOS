@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TodayMealsSection: View {
     let logs: [FoodLog]
+    let date: Date
 
     private func logs(for mealType: MealType) -> [FoodLog] {
         logs.filter { $0.meal.mealType == mealType }
@@ -9,11 +10,11 @@ struct TodayMealsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Today's Meals")
+            Text("Meals")
                 .font(.headline)
 
             ForEach(MealType.allCases, id: \.self) { mealType in
-                MealTypeSection(mealType: mealType, logs: logs(for: mealType))
+                MealTypeSection(mealType: mealType, logs: logs(for: mealType), date: date)
             }
         }
     }
@@ -22,6 +23,7 @@ struct TodayMealsSection: View {
 private struct MealTypeSection: View {
     let mealType: MealType
     let logs: [FoodLog]
+    let date: Date
 
     @State private var showingSearch = false
 
@@ -59,7 +61,7 @@ private struct MealTypeSection: View {
             }
         }
         .sheet(isPresented: $showingSearch) {
-            FoodSearchView(mealType: mealType)
+            FoodSearchView(mealType: mealType, date: date)
         }
     }
 }

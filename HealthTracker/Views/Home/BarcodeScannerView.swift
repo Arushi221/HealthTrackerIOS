@@ -6,6 +6,7 @@ struct BarcodeScannerView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
+    var date: Date = Date()
 
     @State private var scannedCode: String?
     @State private var fetchedProduct: FoodProduct?
@@ -50,7 +51,7 @@ struct BarcodeScannerView: View {
             Task { await lookUp(barcode: code) }
         }
         .sheet(item: $fetchedProduct) { product in
-            AddFoodToMealView(product: product, onSave: { dismiss() })
+            AddFoodToMealView(product: product, date: date, onSave: { dismiss() })
         }
     }
 
