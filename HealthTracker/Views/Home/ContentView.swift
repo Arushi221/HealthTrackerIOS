@@ -13,8 +13,8 @@ struct ContentView: View {
             MealPlanView()
                 .tabItem { Label("Meal Plan", systemImage: "calendar") }
 
-            FoodLogView()
-                .tabItem { Label("Log", systemImage: "list.bullet") }
+            ProfileView()
+                .tabItem { Label("Profile", systemImage: "person.circle") }
         }
     }
 }

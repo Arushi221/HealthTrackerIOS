@@ -7,7 +7,6 @@ struct AddGoalView: View {
 
     let existingGoal: Goal?
 
-    @State private var period: GoalPeriod
     @State private var calories: String
     @State private var protein: String
     @State private var carbs: String
@@ -18,7 +17,6 @@ struct AddGoalView: View {
 
     init(existingGoal: Goal? = nil) {
         self.existingGoal = existingGoal
-        _period = State(initialValue: existingGoal?.period ?? .day)
         _calories = State(initialValue: existingGoal.map { String(Int($0.targetCalories)) } ?? "")
         _protein = State(initialValue: existingGoal.map { String(Int($0.targetProtein)) } ?? "")
         _carbs = State(initialValue: existingGoal.map { String(Int($0.targetCarbs)) } ?? "")
@@ -29,13 +27,6 @@ struct AddGoalView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Period") {
-                    Picker("Goal Period", selection: $period) {
-                        ForEach(GoalPeriod.allCases, id: \.self) { Text($0.rawValue) }
-                    }
-                    .pickerStyle(.segmented)
-                }
-
                 Section {
                     MacroField(label: "Calories (kcal)", value: $calories)
                         .onChange(of: calories) { _, _ in rescaleAllMacros() }
@@ -175,7 +166,6 @@ struct AddGoalView: View {
         let balanced = balancedMacros(targetCalories: targetCalories)
 
         if let existingGoal {
-            existingGoal.period = period
             existingGoal.targetCalories = targetCalories
             existingGoal.targetProtein = balanced.protein
             existingGoal.targetCarbs = balanced.carbs
@@ -183,7 +173,7 @@ struct AddGoalView: View {
             existingGoal.excludedAllergens = excludedAllergens
         } else {
             let goal = Goal(
-                period: period,
+                period: .day,
                 targetCalories: targetCalories,
                 targetProtein: balanced.protein,
                 targetCarbs: balanced.carbs,

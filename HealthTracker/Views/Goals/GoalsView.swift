@@ -18,28 +18,26 @@ struct GoalsView: View {
         NavigationStack {
             List {
                 Section("Macro Targets") {
-                    ForEach(GoalPeriod.allCases, id: \.self) { period in
-                        if let goal = goals.first(where: { $0.period == period }) {
-                            GoalRow(goal: goal)
-                                .swipeActions(edge: .trailing) {
-                                    Button(role: .destructive) {
-                                        context.delete(goal)
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
-                                    }
-                                    Button {
-                                        editingGoal = goal
-                                    } label: {
-                                        Label("Edit", systemImage: "pencil")
-                                    }
-                                    .tint(.blue)
+                    if let goal = goals.first(where: { $0.period == .day }) {
+                        GoalRow(goal: goal)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    context.delete(goal)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
                                 }
-                        } else {
-                            Button("Set \(period.rawValue) Goal") {
-                                showingAddGoal = true
+                                Button {
+                                    editingGoal = goal
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.blue)
                             }
-                            .foregroundStyle(.blue)
+                    } else {
+                        Button("Set Daily Goal") {
+                            showingAddGoal = true
                         }
+                        .foregroundStyle(.blue)
                     }
                 }
 
@@ -138,6 +136,15 @@ struct GoalsView: View {
                     AddFoodCategoryGoalView(category: category, existingGoal: goal)
                 }
             }
+            .onAppear(perform: deleteLegacyNonDailyGoals)
+        }
+    }
+
+    // Macro goals are daily-only now — clean up any weekly/monthly macro
+    // goals left over from before that change.
+    private func deleteLegacyNonDailyGoals() {
+        for goal in goals where goal.period != .day {
+            context.delete(goal)
         }
     }
 }
