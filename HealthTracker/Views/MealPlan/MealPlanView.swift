@@ -166,11 +166,17 @@ struct MealPlanView: View {
     }
 
     private func generateShoppingListAction() {
+        guard shoppingList == nil else {
+            showingShoppingList = true
+            return
+        }
+        guard !weekPlan.isEmpty else { return }
+
+        isGeneratingShoppingList = true
+        shoppingListError = nil
         showingShoppingList = true
-        guard shoppingList == nil, !weekPlan.isEmpty else { return }
+
         Task {
-            isGeneratingShoppingList = true
-            shoppingListError = nil
             do {
                 shoppingList = try await MealPlanService.shared.generateShoppingList(for: weekPlan, profile: profile)
             } catch {

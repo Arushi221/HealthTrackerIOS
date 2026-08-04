@@ -61,4 +61,14 @@ extension Array where Element == FoodLog {
             return keywords.contains { name.contains($0.lowercased()) }
         }
     }
+
+    // Same matches as `matching(keywords:)`, but a meal name joining two foods
+    // with "and" (e.g. "Salmon and blueberries") counts as two servings toward
+    // the goal instead of one.
+    func matchCount(keywords: [String]) -> Int {
+        matching(keywords: keywords).reduce(0) { total, log in
+            let name = log.meal.name.lowercased()
+            return total + (name.contains(" and ") ? 2 : 1)
+        }
+    }
 }

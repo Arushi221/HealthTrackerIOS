@@ -23,6 +23,10 @@ struct FoodCategoryCard: View {
         thisWeekLogs.matching(keywords: keywords)
     }
 
+    private var matchCount: Int {
+        thisWeekLogs.matchCount(keywords: keywords)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -45,7 +49,7 @@ struct FoodCategoryCard: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
-                Text("\(matches.count) matching \(matches.count == 1 ? "food" : "foods") logged this week")
+                Text("\(matchCount) matching \(matchCount == 1 ? "food" : "foods") logged this week")
                     .font(.subheadline)
                 if !matches.isEmpty {
                     Text(matches.map { $0.meal.name }.joined(separator: ", "))

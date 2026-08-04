@@ -29,7 +29,7 @@ struct ShoppingListItem: Decodable, Identifiable {
     var id: String { store + department + name }
 }
 
-struct ShoppingList: Decodable {
+struct ShoppingList {
     let items: [ShoppingListItem]
     let estimatedTotalCost: Double
     let withinBudget: Bool
@@ -46,6 +46,10 @@ private struct WeeklyPlanPayload: Decodable {
     let meals: [SuggestedMeal]
 }
 
+private struct ShoppingListItemsPayload: Decodable {
+    let items: [ShoppingListItem]
+}
+
 // Generates a week of meal suggestions from a person's macro goals, lab
 // results, allergen exclusions, and grocery budget, plus on-demand recipes
 // and a store-grouped shopping list for a set of planned meals.
@@ -55,7 +59,7 @@ actor MealPlanService {
 
     private init() {
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 60
+        config.timeoutIntervalForRequest = 150
         self.session = URLSession(configuration: config)
     }
 
@@ -87,6 +91,10 @@ actor MealPlanService {
             budgetLine = "No specific budget set."
         }
 
+        // Snack is small; breakfast/lunch/dinner split the rest roughly evenly.
+        let snackCalories = (goal.targetCalories * 0.12).rounded()
+        let mainMealCalories = ((goal.targetCalories - snackCalories) / 3).rounded()
+
         let userPrompt = """
         Suggest a full week (7 days, day index 0 through 6) of meals — one breakfast, one lunch, \
         one dinner, and one snack per day — that together approximate these daily targets:
@@ -101,19 +109,26 @@ actor MealPlanService {
         for low iron, lower added sugar for elevated A1c/triglycerides, etc.): \(labLine)
         Weekly grocery budget: \(budgetLine)
 
-        Vary the meals across the week rather than repeating the same thing every day. For each \
-        meal, give a realistic name, a one-sentence description of what's in it, and its estimated \
-        calories/protein/carbs/fat. Never include an avoided allergen or its common aliases.
+        Meal sizing: breakfast, lunch, and dinner should each be close to \(Int(mainMealCalories)) kcal \
+        (roughly equal to each other, within about 15%) — don't make one meal much larger than the \
+        others. The snack should be small, around \(Int(snackCalories)) kcal — not a large snack.
+
+        This is for meal prepping, so it's fine — even encouraged — to repeat the same recipe across \
+        multiple days (e.g. the same lunch for 3-4 days in a row) rather than needing something \
+        different every single day. For each meal, give a realistic name, a one-sentence description \
+        of what's in it, and its estimated calories/protein/carbs/fat. Never include an avoided \
+        allergen or its common aliases.
         """
 
         let mealTypes = MealType.allCases.map(\.rawValue)
 
         let body: [String: Any] = [
             "model": "claude-opus-5",
-            "max_tokens": 8000,
+            "max_tokens": 10000,
             "system": "You are a nutrition assistant suggesting a week of meals that fit a person's macro targets, lab results, food restrictions, and grocery budget. You are not providing medical advice.",
             "messages": [["role": "user", "content": userPrompt]],
             "output_config": [
+                "effort": "medium",
                 "format": [
                     "type": "json_schema",
                     "schema": [
@@ -166,10 +181,11 @@ actor MealPlanService {
 
         let body: [String: Any] = [
             "model": "claude-opus-5",
-            "max_tokens": 1536,
+            "max_tokens": 4096,
             "system": "You are a home-cooking assistant writing simple, realistic recipes.",
             "messages": [["role": "user", "content": userPrompt]],
             "output_config": [
+                "effort": "low",
                 "format": [
                     "type": "json_schema",
                     "schema": [
@@ -207,17 +223,21 @@ actor MealPlanService {
         }
 
         let userPrompt = """
-        Build a consolidated shopping list for this week of meals:
+        Build a consolidated shopping list for this exact week of meals — nothing more, nothing less:
         \(mealLines)
 
-        Combine repeated ingredients across meals into single line items with a total quantity. \
+        List every ingredient needed to cook every single meal above. Do not skip any meal, and do \
+        not stop before covering all \(meals.count) meals — a full week like this typically needs \
+        20-40+ distinct grocery items, so a short list means you missed meals. Combine repeated \
+        ingredients across meals into single line items with a combined quantity (e.g. "6 eggs" not \
+        "2 eggs" three separate times). Only include ingredients these specific meals actually need — \
+        don't add unrelated pantry staples.
+
         Stores this person shops at: \(storeLine)
         Weekly grocery budget: \(budgetLine)
 
         For each item, assign the store it's best bought from (from the list above, or a sensible \
-        generic store type if none were given) and a grocery department. Give an estimated cost \
-        per item in USD, and a total estimated cost for the whole list. Set withinBudget to true \
-        only if the total is at or under the stated budget (or if no budget was given).
+        generic store type if none were given), a grocery department, and an estimated cost in USD.
         """
 
         let departmentEnum = ["Produce", "Dairy", "Meat & Seafood", "Bakery", "Pantry", "Frozen", "Other"]
@@ -236,10 +256,11 @@ actor MealPlanService {
 
         let body: [String: Any] = [
             "model": "claude-opus-5",
-            "max_tokens": 4096,
-            "system": "You are a grocery planning assistant that turns a week of meals into a consolidated, store-grouped shopping list within budget.",
+            "max_tokens": 8000,
+            "system": "You are a grocery planning assistant that turns a week of meals into a complete, consolidated, store-grouped shopping list. Missing ingredients or stopping early is the most common mistake — always cover every meal you were given.",
             "messages": [["role": "user", "content": userPrompt]],
             "output_config": [
+                "effort": "low",
                 "format": [
                     "type": "json_schema",
                     "schema": [
@@ -253,18 +274,39 @@ actor MealPlanService {
                                     "required": ["name", "quantity", "store", "department", "estimatedCost"],
                                     "additionalProperties": false
                                 ]
-                            ],
-                            "estimatedTotalCost": ["type": "number"],
-                            "withinBudget": ["type": "boolean"]
+                            ]
                         ],
-                        "required": ["items", "estimatedTotalCost", "withinBudget"],
+                        "required": ["items"],
                         "additionalProperties": false
                     ]
                 ]
             ]
         ]
 
-        return try await send(body: body)
+        // Claude occasionally bails early on this task (a handful of items
+        // instead of a full week's worth), even with plenty of token budget
+        // left — retry a couple of times if the result looks implausibly short.
+        let minExpectedItems = max(8, meals.count)
+        var bestItems: [ShoppingListItem] = []
+        for attempt in 0..<3 {
+            let payload: ShoppingListItemsPayload = try await send(body: body)
+            if payload.items.count > bestItems.count {
+                bestItems = payload.items
+            }
+            if bestItems.count >= minExpectedItems {
+                break
+            }
+            if attempt < 2 { continue }
+        }
+
+        guard !bestItems.isEmpty else {
+            throw AnthropicServiceError.emptyResponse
+        }
+
+        let total = bestItems.reduce(0) { $0 + $1.estimatedCost }
+        let withinBudget = (profile?.weeklyBudget ?? 0) <= 0 || total <= (profile?.weeklyBudget ?? 0)
+
+        return ShoppingList(items: bestItems, estimatedTotalCost: total, withinBudget: withinBudget)
     }
 
     private func send<T: Decodable>(body: [String: Any]) async throws -> T {

@@ -27,9 +27,9 @@ extension FoodCategoryGoal {
     func progress(for period: GoalPeriod, logs: [FoodLog], keywords: [String]) -> FoodCategoryProgress {
         let interval = currentInterval(for: period)
         let logsInRange = logs.filter { interval.contains($0.loggedAt) }
-        let matches = logsInRange.matching(keywords: keywords)
+        let count = logsInRange.matchCount(keywords: keywords)
         let days = interval.duration / 86400
         let target = Int((Double(dailyTarget) * days).rounded())
-        return FoodCategoryProgress(count: matches.count, target: target)
+        return FoodCategoryProgress(count: count, target: target)
     }
 }
