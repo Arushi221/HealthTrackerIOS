@@ -8,6 +8,7 @@ struct ProfileView: View {
     @State private var weeklyBudget: String = ""
     @State private var preferredStores: [String] = []
     @State private var storeInput: String = ""
+    @State private var preferIndianMediterranean: Bool = false
 
     private var profile: UserProfile? { profiles.first }
 
@@ -50,11 +51,20 @@ struct ProfileView: View {
                     }
                     .onDelete { preferredStores.remove(atOffsets: $0) }
                 }
+
+                Section {
+                    Toggle("Indian & Mediterranean", isOn: $preferIndianMediterranean)
+                } header: {
+                    Text("Cuisine")
+                } footer: {
+                    Text("When on, the meal planner will primarily suggest Indian and Mediterranean dishes.")
+                }
             }
             .navigationTitle("Profile")
             .onAppear(perform: loadFromProfile)
             .onChange(of: weeklyBudget) { _, _ in save() }
             .onChange(of: preferredStores) { _, _ in save() }
+            .onChange(of: preferIndianMediterranean) { _, _ in save() }
         }
     }
 
@@ -62,6 +72,7 @@ struct ProfileView: View {
         guard let profile else { return }
         weeklyBudget = profile.weeklyBudget > 0 ? String(Int(profile.weeklyBudget)) : ""
         preferredStores = profile.preferredStores
+        preferIndianMediterranean = profile.preferIndianMediterranean
     }
 
     private func save() {
@@ -69,8 +80,13 @@ struct ProfileView: View {
         if let profile {
             profile.weeklyBudget = budget
             profile.preferredStores = preferredStores
+            profile.preferIndianMediterranean = preferIndianMediterranean
         } else {
-            let newProfile = UserProfile(weeklyBudget: budget, preferredStores: preferredStores)
+            let newProfile = UserProfile(
+                weeklyBudget: budget,
+                preferredStores: preferredStores,
+                preferIndianMediterranean: preferIndianMediterranean
+            )
             context.insert(newProfile)
         }
     }

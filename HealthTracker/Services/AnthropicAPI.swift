@@ -14,11 +14,13 @@ struct AnthropicMessageResponse: Decodable {
 enum AnthropicServiceError: Error, LocalizedError {
     case noAPIKey
     case emptyResponse
+    case incompleteResponse
 
     var errorDescription: String? {
         switch self {
         case .noAPIKey: return "Add your Anthropic API key to Secrets.swift."
         case .emptyResponse: return "No response from Claude."
+        case .incompleteResponse: return "Claude's response was incomplete. Please try again."
         }
     }
 }

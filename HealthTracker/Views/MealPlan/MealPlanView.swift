@@ -11,6 +11,7 @@ struct MealPlanView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     @State private var loggedMealIDs: Set<String> = []
+    @State private var mealServings: [String: Double] = [:]
 
     @State private var selectedMealForRecipe: SuggestedMeal?
     @State private var showingShoppingList = false
@@ -49,7 +50,7 @@ struct MealPlanView: View {
                 }
             }
             .sheet(item: $selectedMealForRecipe) { meal in
-                RecipeSheetView(meal: meal, allergensToAvoid: goal?.excludedAllergens ?? [])
+                RecipeSheetView(meal: meal, servings: mealServings[meal.id] ?? 1, allergensToAvoid: goal?.excludedAllergens ?? [])
             }
             .sheet(isPresented: $showingShoppingList) {
                 ShoppingListSheetView(
@@ -108,9 +109,11 @@ struct MealPlanView: View {
                                 if let meal = dayMeals.first(where: { $0.mealType == mealType.rawValue }) {
                                     SuggestedMealRow(
                                         meal: meal,
+                                        servings: mealServings[meal.id] ?? 1,
                                         isLogged: loggedMealIDs.contains(meal.id),
                                         onTapRecipe: { selectedMealForRecipe = meal },
-                                        onLog: { logMeal(meal, goal: goal) }
+                                        onLog: { logMeal(meal, goal: goal) },
+                                        onServingsChange: { updateServings(for: meal, to: $0) }
                                     )
                                 }
                             }
@@ -157,6 +160,7 @@ struct MealPlanView: View {
         errorMessage = nil
         shoppingList = nil
         loggedMealIDs = []
+        mealServings = [:]
         do {
             weekPlan = try await MealPlanService.shared.generateWeeklyPlan(goal: goal, labResults: labResults, profile: profile)
         } catch {
@@ -178,7 +182,7 @@ struct MealPlanView: View {
 
         Task {
             do {
-                shoppingList = try await MealPlanService.shared.generateShoppingList(for: weekPlan, profile: profile)
+                shoppingList = try await MealPlanService.shared.generateShoppingList(for: weekPlan, servings: mealServings, profile: profile)
             } catch {
                 shoppingListError = error.localizedDescription
             }
@@ -186,9 +190,18 @@ struct MealPlanView: View {
         }
     }
 
+    // Servings affect ingredient quantities, so an already-generated shopping
+    // list is stale as soon as a serving count changes — clear it so the next
+    // cart tap regenerates with the new amounts.
+    private func updateServings(for meal: SuggestedMeal, to newValue: Double) {
+        mealServings[meal.id] = newValue
+        shoppingList = nil
+    }
+
     private func logMeal(_ meal: SuggestedMeal, goal: Goal) {
         guard let mealType = MealType(rawValue: meal.mealType) else { return }
         let date = dateForDay(meal.day)
+        let servings = mealServings[meal.id] ?? 1
 
         let product = FoodProduct(
             name: meal.name,
@@ -201,7 +214,7 @@ struct MealPlanView: View {
         )
         context.insert(product)
 
-        let item = MealItem(product: product, servings: 1)
+        let item = MealItem(product: product, servings: servings)
         context.insert(item)
 
         let newMeal = Meal(name: meal.name, mealType: mealType, items: [item], date: date)
@@ -216,9 +229,11 @@ struct MealPlanView: View {
 
 private struct SuggestedMealRow: View {
     let meal: SuggestedMeal
+    let servings: Double
     let isLogged: Bool
     let onTapRecipe: () -> Void
     let onLog: () -> Void
+    let onServingsChange: (Double) -> Void
 
     var body: some View {
         HStack(alignment: .top) {
@@ -226,9 +241,29 @@ private struct SuggestedMealRow: View {
                 Text(meal.mealType).font(.caption.weight(.semibold)).foregroundStyle(.secondary)
                 Text(meal.name).font(.subheadline.weight(.medium))
                 Text(meal.description).font(.caption).foregroundStyle(.secondary)
-                Text("\(Int(meal.calories)) kcal · P:\(Int(meal.protein))g C:\(Int(meal.carbs))g F:\(Int(meal.fat))g")
+                Text("\(Int(meal.calories * servings)) kcal · P:\(Int(meal.protein * servings))g C:\(Int(meal.carbs * servings))g F:\(Int(meal.fat * servings))g")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
+
+                HStack(spacing: 6) {
+                    Button {
+                        onServingsChange(max(1, servings - 1))
+                    } label: {
+                        Image(systemName: "minus.circle")
+                    }
+                    .disabled(servings <= 1)
+                    Text("×\(servings.formatted())")
+                        .font(.caption.weight(.medium))
+                        .frame(minWidth: 24)
+                    Button {
+                        onServingsChange(servings + 1)
+                    } label: {
+                        Image(systemName: "plus.circle")
+                    }
+                }
+                .buttonStyle(.plain)
+                .font(.caption)
+                .foregroundStyle(.secondary)
             }
             Spacer()
             VStack(spacing: 10) {
@@ -250,6 +285,7 @@ private struct SuggestedMealRow: View {
 
 private struct RecipeSheetView: View {
     let meal: SuggestedMeal
+    let servings: Double
     let allergensToAvoid: [String]
 
     @Environment(\.dismiss) private var dismiss
@@ -291,7 +327,7 @@ private struct RecipeSheetView: View {
                     }
                 }
             }
-            .navigationTitle(meal.name)
+            .navigationTitle(servings == 1 ? meal.name : "\(meal.name) (×\(servings.formatted()))")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -308,7 +344,7 @@ private struct RecipeSheetView: View {
         isLoading = true
         errorMessage = nil
         do {
-            recipe = try await MealPlanService.shared.generateRecipe(for: meal, allergensToAvoid: allergensToAvoid)
+            recipe = try await MealPlanService.shared.generateRecipe(for: meal, servings: servings, allergensToAvoid: allergensToAvoid)
         } catch {
             errorMessage = error.localizedDescription
         }

@@ -11,6 +11,22 @@ struct SuggestedMeal: Decodable, Identifiable, Hashable {
     let fat: Double
 
     var id: String { "\(day)-\(mealType)-\(name)" }
+
+    // Protein/carbs are 4 kcal/g, fat is 9 kcal/g — calories is a derived
+    // value, not an independent estimate, so recompute it from the macros
+    // rather than trusting whatever number the model reported alongside them.
+    func macroConsistent() -> SuggestedMeal {
+        SuggestedMeal(
+            day: day,
+            mealType: mealType,
+            name: name,
+            description: description,
+            calories: protein * 4 + carbs * 4 + fat * 9,
+            protein: protein,
+            carbs: carbs,
+            fat: fat
+        )
+    }
 }
 
 struct Recipe: Decodable {
@@ -95,6 +111,10 @@ actor MealPlanService {
         let snackCalories = (goal.targetCalories * 0.12).rounded()
         let mainMealCalories = ((goal.targetCalories - snackCalories) / 3).rounded()
 
+        let cuisineLine = (profile?.preferIndianMediterranean ?? false)
+            ? "Primarily Indian and Mediterranean cuisine — think dals, curries, tikka, biryani-style grain bowls, chana/rajma, Greek- and Levantine-style dishes, hummus and falafel, olive-oil- and lemon-forward salads, grilled meats with tzatziki, etc. Most meals across the week should draw from these two cuisines; occasional variety outside them is fine but should stay the minority."
+            : "No specific cuisine preference — use a normal variety of everyday meals."
+
         let userPrompt = """
         Suggest a full week (7 days, day index 0 through 6) of meals — one breakfast, one lunch, \
         one dinner, and one snack per day — that together approximate these daily targets:
@@ -108,6 +128,7 @@ actor MealPlanService {
         Recent lab results to take into account when choosing foods (e.g. suggest iron-rich foods \
         for low iron, lower added sugar for elevated A1c/triglycerides, etc.): \(labLine)
         Weekly grocery budget: \(budgetLine)
+        Cuisine preference: \(cuisineLine)
 
         Meal sizing: breakfast, lunch, and dinner should each be close to \(Int(mainMealCalories)) kcal \
         (roughly equal to each other, within about 15%) — don't make one meal much larger than the \
@@ -116,8 +137,10 @@ actor MealPlanService {
         This is for meal prepping, so it's fine — even encouraged — to repeat the same recipe across \
         multiple days (e.g. the same lunch for 3-4 days in a row) rather than needing something \
         different every single day. For each meal, give a realistic name, a one-sentence description \
-        of what's in it, and its estimated calories/protein/carbs/fat. Never include an avoided \
-        allergen or its common aliases.
+        of what's in it, and its estimated calories/protein/carbs/fat. The calories must be \
+        consistent with the macros: protein grams × 4, plus carbs grams × 4, plus fat grams × 9 \
+        should equal the calories you give (within rounding) — don't report a calorie number that \
+        doesn't match the macros. Never include an avoided allergen or its common aliases.
         """
 
         let mealTypes = MealType.allCases.map(\.rawValue)
@@ -128,7 +151,7 @@ actor MealPlanService {
             "system": "You are a nutrition assistant suggesting a week of meals that fit a person's macro targets, lab results, food restrictions, and grocery budget. You are not providing medical advice.",
             "messages": [["role": "user", "content": userPrompt]],
             "output_config": [
-                "effort": "medium",
+                "effort": "low",
                 "format": [
                     "type": "json_schema",
                     "schema": [
@@ -160,23 +183,40 @@ actor MealPlanService {
             ]
         ]
 
-        let payload: WeeklyPlanPayload = try await send(body: body)
-        return payload.meals
+        // 7 days x 4 meal types = 28. Retry if a run comes back short instead
+        // of making the user wait through a slow effort level "just in case".
+        let expectedMeals = 7 * MealType.allCases.count
+        let minAcceptableMeals = expectedMeals / 2  // a badly-thin plan isn't usable — surface an error rather than showing it
+        var bestMeals: [SuggestedMeal] = []
+        for _ in 0..<4 {
+            let payload: WeeklyPlanPayload = try await send(body: body)
+            if payload.meals.count > bestMeals.count {
+                bestMeals = payload.meals
+            }
+            if bestMeals.count >= expectedMeals { break }
+        }
+
+        guard bestMeals.count >= minAcceptableMeals else {
+            throw AnthropicServiceError.incompleteResponse
+        }
+        return bestMeals.map { $0.macroConsistent() }
     }
 
-    func generateRecipe(for meal: SuggestedMeal, allergensToAvoid: [String]) async throws -> Recipe {
+    func generateRecipe(for meal: SuggestedMeal, servings: Double, allergensToAvoid: [String]) async throws -> Recipe {
         let allergenLine = allergensToAvoid.isEmpty ? "None." : allergensToAvoid.joined(separator: ", ")
+        let servingsWord = servings == 1 ? "1 serving" : "\(servings.formatted()) servings"
 
         let userPrompt = """
-        Give a simple home-cook recipe for this meal:
+        Give a simple home-cook recipe for this meal, scaled to make \(servingsWord):
         Name: \(meal.name)
         Description: \(meal.description)
-        Target macros: \(Int(meal.calories)) kcal, \(Int(meal.protein))g protein, \(Int(meal.carbs))g carbs, \(Int(meal.fat))g fat
+        Per-serving macros: \(Int(meal.calories)) kcal, \(Int(meal.protein))g protein, \(Int(meal.carbs))g carbs, \(Int(meal.fat))g fat
 
         Allergens/ingredients to strictly avoid: \(allergenLine)
 
-        List the ingredients with quantities, and short numbered-style step instructions. Include \
-        a rough estimated cost in USD to make this single serving.
+        List the ingredients with quantities scaled for \(servingsWord) total (not per-serving \
+        quantities), and short numbered-style step instructions for cooking that full batch. Include \
+        a rough estimated total cost in USD to make all \(servingsWord).
         """
 
         let body: [String: Any] = [
@@ -205,8 +245,12 @@ actor MealPlanService {
         return try await send(body: body)
     }
 
-    func generateShoppingList(for meals: [SuggestedMeal], profile: UserProfile?) async throws -> ShoppingList {
-        let mealLines = meals.map { "Day \($0.day) \($0.mealType): \($0.name) — \($0.description)" }.joined(separator: "\n")
+    func generateShoppingList(for meals: [SuggestedMeal], servings: [String: Double], profile: UserProfile?) async throws -> ShoppingList {
+        let mealLines = meals.map { meal -> String in
+            let s = servings[meal.id] ?? 1.0
+            let servingsNote = s == 1.0 ? "" : " [make \(s.formatted()) servings of this]"
+            return "Day \(meal.day) \(meal.mealType): \(meal.name) — \(meal.description)\(servingsNote)"
+        }.joined(separator: "\n")
 
         let storeLine: String
         if let profile, !profile.preferredStores.isEmpty {
@@ -228,7 +272,9 @@ actor MealPlanService {
 
         List every ingredient needed to cook every single meal above. Do not skip any meal, and do \
         not stop before covering all \(meals.count) meals — a full week like this typically needs \
-        20-40+ distinct grocery items, so a short list means you missed meals. Combine repeated \
+        20-40+ distinct grocery items, so a short list means you missed meals. Some meals are \
+        tagged "[make N servings of this]" — scale that meal's ingredient quantities by N before \
+        combining with everything else; meals without a tag are a single serving. Combine repeated \
         ingredients across meals into single line items with a combined quantity (e.g. "6 eggs" not \
         "2 eggs" three separate times). Only include ingredients these specific meals actually need — \
         don't add unrelated pantry staples.
