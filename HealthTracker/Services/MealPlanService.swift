@@ -11,21 +11,47 @@ struct SuggestedMeal: Decodable, Identifiable, Hashable {
     let fat: Double
 
     var id: String { "\(day)-\(mealType)-\(name)" }
+}
 
-    // Protein/carbs are 4 kcal/g, fat is 9 kcal/g — calories is a derived
-    // value, not an independent estimate, so recompute it from the macros
-    // rather than trusting whatever number the model reported alongside them.
-    func macroConsistent() -> SuggestedMeal {
-        SuggestedMeal(
-            day: day,
-            mealType: mealType,
-            name: name,
-            description: description,
-            calories: protein * 4 + carbs * 4 + fat * 9,
-            protein: protein,
-            carbs: carbs,
-            fat: fat
-        )
+extension Array where Element == SuggestedMeal {
+    // Rescales each day's meals so protein/carbs/fat sum to exactly the
+    // day's goal (preserving each meal's relative share of that macro within
+    // the day), then recomputes calories from the rescaled macros. This
+    // guarantees two things at once: the day's totals sync with the goal,
+    // and every meal's own calories stay consistent with its own macros
+    // (4 kcal/g protein and carbs, 9 kcal/g fat) — rather than trusting the
+    // model's independent, occasionally-inconsistent estimates for either.
+    func syncedToDaily(goal: Goal) -> [SuggestedMeal] {
+        let byDay = Dictionary(grouping: self, by: \.day)
+        var result: [SuggestedMeal] = []
+        for day in byDay.keys.sorted() {
+            guard let meals = byDay[day] else { continue }
+
+            let totalProtein = meals.reduce(0) { $0 + $1.protein }
+            let totalCarbs = meals.reduce(0) { $0 + $1.carbs }
+            let totalFat = meals.reduce(0) { $0 + $1.fat }
+
+            let proteinScale = totalProtein > 0 ? goal.targetProtein / totalProtein : 1
+            let carbsScale = totalCarbs > 0 ? goal.targetCarbs / totalCarbs : 1
+            let fatScale = totalFat > 0 ? goal.targetFat / totalFat : 1
+
+            for meal in meals {
+                let protein = meal.protein * proteinScale
+                let carbs = meal.carbs * carbsScale
+                let fat = meal.fat * fatScale
+                result.append(SuggestedMeal(
+                    day: meal.day,
+                    mealType: meal.mealType,
+                    name: meal.name,
+                    description: meal.description,
+                    calories: protein * 4 + carbs * 4 + fat * 9,
+                    protein: protein,
+                    carbs: carbs,
+                    fat: fat
+                ))
+            }
+        }
+        return result
     }
 }
 
@@ -199,7 +225,7 @@ actor MealPlanService {
         guard bestMeals.count >= minAcceptableMeals else {
             throw AnthropicServiceError.incompleteResponse
         }
-        return bestMeals.map { $0.macroConsistent() }
+        return bestMeals.syncedToDaily(goal: goal)
     }
 
     func generateRecipe(for meal: SuggestedMeal, servings: Double, allergensToAvoid: [String]) async throws -> Recipe {
