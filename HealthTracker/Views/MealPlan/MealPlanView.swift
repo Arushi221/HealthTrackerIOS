@@ -12,6 +12,7 @@ struct MealPlanView: View {
     @State private var errorMessage: String?
     @State private var loggedMealIDs: Set<String> = []
     @State private var mealServings: [String: Double] = [:]
+    @State private var customInstructions: String = ""
 
     @State private var selectedMealForRecipe: SuggestedMeal?
     @State private var showingShoppingList = false
@@ -32,6 +33,11 @@ struct MealPlanView: View {
                 }
             }
             .navigationTitle("Meal Plan")
+            .safeAreaInset(edge: .top) {
+                if goal != nil {
+                    CustomizationBar(text: $customInstructions, onSubmit: { Task { await generate() } })
+                }
+            }
             .toolbar {
                 if goal != nil, !weekPlan.isEmpty {
                     ToolbarItemGroup(placement: .primaryAction) {
@@ -162,7 +168,7 @@ struct MealPlanView: View {
         loggedMealIDs = []
         mealServings = [:]
         do {
-            weekPlan = try await MealPlanService.shared.generateWeeklyPlan(goal: goal, labResults: labResults, profile: profile)
+            weekPlan = try await MealPlanService.shared.generateWeeklyPlan(goal: goal, labResults: labResults, profile: profile, customInstructions: customInstructions)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -224,6 +230,34 @@ struct MealPlanView: View {
         context.insert(log)
 
         loggedMealIDs.insert(meal.id)
+    }
+}
+
+private struct CustomizationBar: View {
+    @Binding var text: String
+    let onSubmit: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "wand.and.stars")
+                .foregroundStyle(.secondary)
+            TextField("Customize this plan (e.g. no seafood, quick meals only)", text: $text)
+                .textFieldStyle(.plain)
+                .submitLabel(.done)
+                .onSubmit(onSubmit)
+            if !text.isEmpty {
+                Button {
+                    text = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(.regularMaterial)
     }
 }
 

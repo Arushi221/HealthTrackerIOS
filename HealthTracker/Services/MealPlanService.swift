@@ -105,7 +105,7 @@ actor MealPlanService {
         self.session = URLSession(configuration: config)
     }
 
-    func generateWeeklyPlan(goal: Goal, labResults: [LabResult], profile: UserProfile?) async throws -> [SuggestedMeal] {
+    func generateWeeklyPlan(goal: Goal, labResults: [LabResult], profile: UserProfile?, customInstructions: String = "") async throws -> [SuggestedMeal] {
         let allergenLine = goal.excludedAllergens.isEmpty
             ? "None."
             : goal.excludedAllergens.joined(separator: ", ")
@@ -141,6 +141,18 @@ actor MealPlanService {
             ? "Primarily Indian and Mediterranean cuisine — think dals, curries, tikka, biryani-style grain bowls, chana/rajma, Greek- and Levantine-style dishes, hummus and falafel, olive-oil- and lemon-forward salads, grilled meats with tzatziki, etc. Most meals across the week should draw from these two cuisines; occasional variety outside them is fine but should stay the minority."
             : "No specific cuisine preference — use a normal variety of everyday meals."
 
+        let trimmedCustomInstructions = customInstructions.trimmingCharacters(in: .whitespacesAndNewlines)
+        let customInstructionsBlock = trimmedCustomInstructions.isEmpty
+            ? ""
+            : """
+
+
+            One more thing — the user typed this custom request for this specific plan, so follow it \
+            closely and let it override any of the general guidance above where they conflict (except \
+            the allergens to avoid, which are a hard safety constraint no matter what): \
+            "\(trimmedCustomInstructions)"
+            """
+
         let userPrompt = """
         Suggest a full week (7 days, day index 0 through 6) of meals — one breakfast, one lunch, \
         one dinner, and one snack per day — that together approximate these daily targets:
@@ -166,7 +178,8 @@ actor MealPlanService {
         of what's in it, and its estimated calories/protein/carbs/fat. The calories must be \
         consistent with the macros: protein grams × 4, plus carbs grams × 4, plus fat grams × 9 \
         should equal the calories you give (within rounding) — don't report a calorie number that \
-        doesn't match the macros. Never include an avoided allergen or its common aliases.
+        doesn't match the macros. Never include an avoided allergen or its common aliases.\
+        \(customInstructionsBlock)
         """
 
         let mealTypes = MealType.allCases.map(\.rawValue)
