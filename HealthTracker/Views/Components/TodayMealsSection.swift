@@ -89,6 +89,7 @@ private struct MealTypeSection: View {
     let date: Date
 
     @State private var showingSearch = false
+    @State private var showingQuickAdd = false
 
     private var totalCalories: Double {
         logs.reduce(0) { $0 + $1.meal.totalCalories }
@@ -104,6 +105,11 @@ private struct MealTypeSection: View {
                     Text("\(Int(totalCalories)) kcal")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                }
+                Button {
+                    showingQuickAdd = true
+                } label: {
+                    Image(systemName: "square.and.pencil")
                 }
                 Button {
                     showingSearch = true
@@ -125,6 +131,9 @@ private struct MealTypeSection: View {
         }
         .sheet(isPresented: $showingSearch) {
             FoodSearchView(mealType: mealType, date: date)
+        }
+        .sheet(isPresented: $showingQuickAdd) {
+            QuickAddFoodView(mealType: mealType, date: date)
         }
     }
 }
