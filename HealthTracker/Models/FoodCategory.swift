@@ -26,6 +26,16 @@ enum FoodCategoryCatalog {
             key: "autoimmune_support",
             displayName: "Autoimmune Support",
             promptTopic: "foods commonly recommended for general autoimmune and anti-inflammatory support — omega-3 rich fish, turmeric, ginger, leafy greens, berries, and fermented foods"
+        ),
+        FoodCategory(
+            key: "sadhguru_digestion_energy",
+            displayName: "Digestion & Energy (Sadhguru)",
+            promptTopic: "foods recommended in Sadhguru's Inner Engineering teachings for better digestion, blood sugar control, and sustained energy — especially millets like ragi, leafy greens, and fresh whole fruit"
+        ),
+        FoodCategory(
+            key: "sadhguru_protein_superfoods",
+            displayName: "Protein Superfoods (Sadhguru)",
+            promptTopic: "high-protein, high-energy superfoods recommended in Sadhguru's Inner Engineering teachings — especially groundnuts/peanuts, sesame seeds, coconut, and banana"
         )
     ]
 }
