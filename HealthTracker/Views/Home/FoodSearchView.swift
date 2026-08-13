@@ -1,7 +1,9 @@
 import SwiftUI
+import SwiftData
 
 struct FoodSearchView: View {
     @Environment(\.dismiss) private var dismiss
+    @Query(sort: \FoodProduct.dateAdded, order: .reverse) private var allProducts: [FoodProduct]
     let mealType: MealType
     let date: Date
 
@@ -12,30 +14,57 @@ struct FoodSearchView: View {
     @State private var selectedProduct: FoodProduct?
     @State private var searchTask: Task<Void, Never>?
 
+    // Foods you've logged before that match what you're typing — instant,
+    // no network round trip, and de-duplicated (a food logged 5 times over
+    // 5 days creates 5 FoodProduct rows, but should only suggest once).
+    private var previouslyLogged: [FoodProduct] {
+        let trimmed = query.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return [] }
+
+        var seenNames = Set<String>()
+        var matches: [FoodProduct] = []
+        for product in allProducts {
+            guard product.name.localizedCaseInsensitiveContains(trimmed) else { continue }
+            let key = product.name.lowercased()
+            guard !seenNames.contains(key) else { continue }
+            seenNames.insert(key)
+            matches.append(product)
+            if matches.count == 10 { break }
+        }
+        return matches
+    }
+
     var body: some View {
         NavigationStack {
             List {
+                if !previouslyLogged.isEmpty {
+                    Section("Previously Logged") {
+                        ForEach(previouslyLogged) { product in
+                            Button {
+                                select(product)
+                            } label: {
+                                ProductRow(product: product)
+                            }
+                        }
+                    }
+                }
+
                 if isLoading {
                     ProgressView("Searching…")
                 } else if let errorMessage {
                     Text(errorMessage).foregroundStyle(.secondary)
-                } else if results.isEmpty && !query.isEmpty {
+                } else if results.isEmpty && !query.isEmpty && previouslyLogged.isEmpty {
                     Text("No results for \"\(query)\"").foregroundStyle(.secondary)
                 }
 
-                ForEach(results) { product in
-                    Button {
-                        select(product)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(product.name)
-                                .foregroundStyle(.primary)
-                            Text(caloriesLine(for: product))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(macrosLine(for: product))
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
+                if !results.isEmpty {
+                    Section(previouslyLogged.isEmpty ? "" : "Search Results") {
+                        ForEach(results) { product in
+                            Button {
+                                select(product)
+                            } label: {
+                                ProductRow(product: product)
+                            }
                         }
                     }
                 }
@@ -66,16 +95,6 @@ struct FoodSearchView: View {
         }
     }
 
-    private func caloriesLine(for product: FoodProduct) -> String {
-        var parts = ["\(Int(product.calories)) kcal per \(Int(product.servingAmount))\(product.servingUnit)"]
-        if let brand = product.brand { parts.append(brand) }
-        return parts.joined(separator: " · ")
-    }
-
-    private func macrosLine(for product: FoodProduct) -> String {
-        "P: \(Int(product.protein))g  C: \(Int(product.carbs))g  F: \(Int(product.fat))g"
-    }
-
     private func select(_ product: FoodProduct) {
         Task {
             await FoodLookupService.shared.enrichMicronutrients(for: product)
@@ -100,5 +119,32 @@ struct FoodSearchView: View {
             results = []
         }
         isLoading = false
+    }
+}
+
+private struct ProductRow: View {
+    let product: FoodProduct
+
+    private var caloriesLine: String {
+        var parts = ["\(Int(product.calories)) kcal per \(Int(product.servingAmount))\(product.servingUnit)"]
+        if let brand = product.brand { parts.append(brand) }
+        return parts.joined(separator: " · ")
+    }
+
+    private var macrosLine: String {
+        "P: \(Int(product.protein))g  C: \(Int(product.carbs))g  F: \(Int(product.fat))g"
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(product.name)
+                .foregroundStyle(.primary)
+            Text(caloriesLine)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(macrosLine)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
     }
 }

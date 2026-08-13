@@ -8,6 +8,7 @@ struct QuickAddFoodView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
+    @Query(sort: \FoodProduct.dateAdded, order: .reverse) private var allProducts: [FoodProduct]
 
     let mealType: MealType
     let date: Date
@@ -29,11 +30,47 @@ struct QuickAddFoodView: View {
         return hasName && hasAnyMacro && allValidOrEmpty
     }
 
+    // Foods logged before with a similar name — tapping one fills in its
+    // macros so you don't have to remember/re-enter them.
+    private var previouslyLogged: [FoodProduct] {
+        let trimmed = name.trimmingCharacters(in: .whitespaces)
+        guard !trimmed.isEmpty else { return [] }
+
+        var seenNames = Set<String>()
+        var matches: [FoodProduct] = []
+        for product in allProducts {
+            guard product.name.localizedCaseInsensitiveContains(trimmed) else { continue }
+            let key = product.name.lowercased()
+            guard !seenNames.contains(key) else { continue }
+            seenNames.insert(key)
+            matches.append(product)
+            if matches.count == 5 { break }
+        }
+        return matches
+    }
+
     var body: some View {
         NavigationStack {
             Form {
                 Section("Food") {
                     TextField("Name", text: $name)
+                }
+
+                if !previouslyLogged.isEmpty {
+                    Section("Previously Logged") {
+                        ForEach(previouslyLogged) { product in
+                            Button {
+                                applySuggestion(product)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(product.name).foregroundStyle(.primary)
+                                    Text("\(Int(product.calories)) kcal · P:\(Int(product.protein))g C:\(Int(product.carbs))g F:\(Int(product.fat))g")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Section("Macros (grams)") {
@@ -63,6 +100,17 @@ struct QuickAddFoodView: View {
                 }
             }
         }
+    }
+
+    private func applySuggestion(_ product: FoodProduct) {
+        name = product.name
+        protein = formatMacro(product.protein)
+        carbs = formatMacro(product.carbs)
+        fat = formatMacro(product.fat)
+    }
+
+    private func formatMacro(_ value: Double) -> String {
+        value == value.rounded() ? String(Int(value)) : String(format: "%.1f", value)
     }
 
     private func log() {
