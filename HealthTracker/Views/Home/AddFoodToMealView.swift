@@ -30,6 +30,7 @@ struct AddFoodToMealView: View {
                     if let brand = product.brand {
                         LabeledContent("Brand", value: brand)
                     }
+                    LabeledContent("Serving size", value: "\(Int(product.servingAmount))\(product.servingUnit)")
                     LabeledContent("Per serving", value: "\(Int(product.calories)) kcal  P:\(Int(product.protein))g  C:\(Int(product.carbs))g  F:\(Int(product.fat))g")
                     if !product.allergens.isEmpty {
                         LabeledContent("Allergens", value: product.allergens.joined(separator: ", "))

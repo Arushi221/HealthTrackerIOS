@@ -25,9 +25,13 @@ actor FoodLookupService {
         let hasMissing = missingKeys.contains { product.micronutrients[$0] == nil }
         guard hasMissing else { return }
 
+        // USDA values are per 100g — scale to the product's actual serving
+        // size so they line up with the rest of its (already per-serving)
+        // nutrition data instead of always assuming a 100g serving.
+        let scale = product.servingAmount / 100.0
         let usdaData = await USDAService.shared.fetchMicronutrients(for: product.name)
         for (key, value) in usdaData where product.micronutrients[key] == nil {
-            product.micronutrients[key] = value
+            product.micronutrients[key] = value * scale
         }
     }
 }
