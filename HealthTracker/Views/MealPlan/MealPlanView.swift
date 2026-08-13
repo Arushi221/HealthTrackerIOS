@@ -6,6 +6,7 @@ struct MealPlanView: View {
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
     @Query private var labResults: [LabResult]
     @Query private var profiles: [UserProfile]
+    @Query private var savedPlans: [SavedMealPlan]
 
     @State private var weekPlan: [SuggestedMeal] = []
     @State private var isLoading = false
@@ -13,6 +14,7 @@ struct MealPlanView: View {
     @State private var loggedMealIDs: Set<String> = []
     @State private var mealServings: [String: Double] = [:]
     @State private var customInstructions: String = ""
+    @State private var didSave = false
 
     @State private var selectedMealForRecipe: SuggestedMeal?
     @State private var showingShoppingList = false
@@ -22,6 +24,7 @@ struct MealPlanView: View {
 
     private var goal: Goal? { goals.first(where: { $0.period == .day }) }
     private var profile: UserProfile? { profiles.first }
+    private var savedPlan: SavedMealPlan? { savedPlans.first }
 
     var body: some View {
         NavigationStack {
@@ -42,6 +45,12 @@ struct MealPlanView: View {
                 if goal != nil, !weekPlan.isEmpty {
                     ToolbarItemGroup(placement: .primaryAction) {
                         Button {
+                            savePlan()
+                        } label: {
+                            Image(systemName: didSave ? "checkmark.circle.fill" : "square.and.arrow.down")
+                                .foregroundStyle(didSave ? .green : .accentColor)
+                        }
+                        Button {
                             generateShoppingListAction()
                         } label: {
                             Image(systemName: "cart")
@@ -55,6 +64,7 @@ struct MealPlanView: View {
                     }
                 }
             }
+            .onAppear(perform: loadSavedPlanIfNeeded)
             .sheet(item: $selectedMealForRecipe) { meal in
                 RecipeSheetView(meal: meal, servings: mealServings[meal.id] ?? 1, allergensToAvoid: goal?.excludedAllergens ?? [])
             }
@@ -160,6 +170,28 @@ struct MealPlanView: View {
         Calendar.current.date(byAdding: .day, value: day, to: Calendar.current.startOfDay(for: Date())) ?? Date()
     }
 
+    // Restore a previously saved plan on first appearance so it survives
+    // app restarts — only when nothing is already loaded, so it doesn't
+    // clobber an in-progress regeneration if the view re-appears.
+    private func loadSavedPlanIfNeeded() {
+        guard weekPlan.isEmpty, let savedPlan else { return }
+        weekPlan = savedPlan.meals
+        mealServings = savedPlan.mealServings
+        didSave = true
+    }
+
+    private func savePlan() {
+        guard !weekPlan.isEmpty else { return }
+        if let savedPlan {
+            savedPlan.meals = weekPlan
+            savedPlan.mealServings = mealServings
+            savedPlan.savedAt = Date()
+        } else {
+            context.insert(SavedMealPlan(meals: weekPlan, mealServings: mealServings))
+        }
+        withAnimation { didSave = true }
+    }
+
     private func generate() async {
         guard let goal else { return }
         isLoading = true
@@ -167,6 +199,7 @@ struct MealPlanView: View {
         shoppingList = nil
         loggedMealIDs = []
         mealServings = [:]
+        didSave = false
         do {
             weekPlan = try await MealPlanService.shared.generateWeeklyPlan(goal: goal, labResults: labResults, profile: profile, customInstructions: customInstructions)
         } catch {
@@ -202,6 +235,7 @@ struct MealPlanView: View {
     private func updateServings(for meal: SuggestedMeal, to newValue: Double) {
         mealServings[meal.id] = newValue
         shoppingList = nil
+        didSave = false
     }
 
     private func logMeal(_ meal: SuggestedMeal, goal: Goal) {

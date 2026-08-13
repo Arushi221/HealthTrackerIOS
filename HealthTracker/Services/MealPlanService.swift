@@ -1,6 +1,6 @@
 import Foundation
 
-struct SuggestedMeal: Decodable, Identifiable, Hashable {
+struct SuggestedMeal: Codable, Identifiable, Hashable {
     let day: Int  // 0 = today ... 6 = six days from today
     let mealType: String
     let name: String

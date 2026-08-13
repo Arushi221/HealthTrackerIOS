@@ -37,6 +37,7 @@
 		975F7AC5B9C1FD4BE253DC37 /* FoodCategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9872043648486AE5EB5E5 /* FoodCategoryCard.swift */; };
 		99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7165BA0322BBB7141EED69 /* MealPlanView.swift */; };
 		7C5468BD15657D446359BDA4 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E80752006A2E13613F705DB /* UserProfile.swift */; };
+		742B3B5FC0189A1AAACE36C7 /* SavedMealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3CA0509A603E66E5A64BD3 /* SavedMealPlan.swift */; };
 		4BD85DEB06F843A8954B1AC1 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BE83BAB14449FC64A43688E /* ProfileView.swift */; };
 		A6779DCEC34DF673EEC2295C /* USDAService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01563E12C1F8267343253B4B /* USDAService.swift */; };
 		AC05BD18EB5B9F96494B86D8 /* EditNutrientGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DE3926FB30336B8156E725B /* EditNutrientGoalView.swift */; };
@@ -93,6 +94,7 @@
 		9EEB4603473FC26677F634FF /* FoodCategoryGoalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryGoalCard.swift; sourceTree = "<group>"; };
 		BF7165BA0322BBB7141EED69 /* MealPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
 		8E80752006A2E13613F705DB /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		3A3CA0509A603E66E5A64BD3 /* SavedMealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedMealPlan.swift; sourceTree = "<group>"; };
 		1BE83BAB14449FC64A43688E /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		C3173664487E70C187641837 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C3968C93D864558F1DB87A76 /* Meal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Meal.swift; sourceTree = "<group>"; };
@@ -141,6 +143,7 @@
 				569D8CEE9DF3A85BB094A460 /* Goal.swift */,
 				C3968C93D864558F1DB87A76 /* Meal.swift */,
 				8E80752006A2E13613F705DB /* UserProfile.swift */,
+				3A3CA0509A603E66E5A64BD3 /* SavedMealPlan.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -359,6 +362,7 @@
 				1B673149CAE62E8E4FEC50B2 /* Meal.swift in Sources */,
 				99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */,
 				7C5468BD15657D446359BDA4 /* UserProfile.swift in Sources */,
+				742B3B5FC0189A1AAACE36C7 /* SavedMealPlan.swift in Sources */,
 				4BD85DEB06F843A8954B1AC1 /* ProfileView.swift in Sources */,
 				EED94614ED79A297E427DB84 /* NoGoalBanner.swift in Sources */,
 				28404818AEE2BDAF75ECF22F /* OpenFoodFactsService.swift in Sources */,
