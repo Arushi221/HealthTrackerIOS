@@ -17,6 +17,23 @@ actor FoodLookupService {
         try await OpenFoodFactsService.shared.search(query: query)
     }
 
+    // OFF's search index (used by search(query:) above) doesn't carry
+    // serving_size/serving_quantity at all, so a search hit always falls
+    // back to an assumed 100g serving. Once the user actually picks a
+    // result, re-fetch the full product by barcode — the same endpoint
+    // barcode scans use — which has real serving data when available.
+    // Falls back to the shallow search result if the re-fetch fails (no
+    // barcode, network error, etc.) rather than blocking selection on it.
+    func resolveSelection(_ product: FoodProduct) async -> FoodProduct {
+        var resolved = product
+        if let barcode = product.barcode, !barcode.isEmpty,
+           let full = try? await OpenFoodFactsService.shared.fetchProduct(barcode: barcode) {
+            resolved = full
+        }
+        await enrichMicronutrients(for: resolved)
+        return resolved
+    }
+
     func enrichMicronutrients(for product: FoodProduct) async {
         let missingKeys: Set<String> = [
             "omega_3", "omega_6", "vitamin_b12", "vitamin_d",

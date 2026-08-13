@@ -97,8 +97,7 @@ struct FoodSearchView: View {
 
     private func select(_ product: FoodProduct) {
         Task {
-            await FoodLookupService.shared.enrichMicronutrients(for: product)
-            selectedProduct = product
+            selectedProduct = await FoodLookupService.shared.resolveSelection(product)
         }
     }
 
