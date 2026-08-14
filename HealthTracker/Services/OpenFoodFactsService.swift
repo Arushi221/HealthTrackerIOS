@@ -151,7 +151,7 @@ actor OpenFoodFactsService {
         self.session = URLSession(configuration: config)
     }
 
-    func fetchProduct(barcode: String) async throws -> FoodProduct {
+    func fetchProduct(barcode: String) async throws -> (product: FoodProduct, hasServingData: Bool) {
         guard let url = URL(string: "\(baseURL)/\(barcode).json") else {
             throw OFFError.notFound
         }
@@ -208,10 +208,10 @@ actor OpenFoodFactsService {
         return response.hits
             .compactMap(\.value)
             .filter { $0.productName != nil && !$0.productName!.isEmpty }
-            .map(mapHit)
+            .map { mapHit($0).product }
     }
 
-    private func mapHit(_ hit: OFFSearchHit) -> FoodProduct {
+    private func mapHit(_ hit: OFFSearchHit) -> (product: FoodProduct, hasServingData: Bool) {
         let off = OFFProduct(
             code: hit.code,
             productName: hit.productName,
@@ -224,14 +224,18 @@ actor OpenFoodFactsService {
         return map(off, barcode: hit.code ?? "")
     }
 
-    private func map(_ off: OFFProduct, barcode: String) -> FoodProduct {
+    private func map(_ off: OFFProduct, barcode: String) -> (product: FoodProduct, hasServingData: Bool) {
         let n = off.nutriments
 
         // OFF's own nutriment fields are always "per 100g" regardless of the
         // product's actual serving size — scale everything by the real
         // serving so "1 serving" in the app matches what's on the label,
-        // not always 100g.
-        let servingGrams = off.servingQuantity ?? Self.parseGrams(from: off.servingSize) ?? 100
+        // not always 100g. When OFF genuinely has no serving data (common —
+        // e.g. its search index never carries it, and plenty of products
+        // lack it even on the full record), fall back to 100g but flag it
+        // so the caller can try a second source instead of trusting it.
+        let realServingGrams = off.servingQuantity ?? Self.parseGrams(from: off.servingSize)
+        let servingGrams = realServingGrams ?? 100
         let scale = servingGrams / 100.0
 
         var micronutrients: [String: Double] = [:]
@@ -264,7 +268,7 @@ actor OpenFoodFactsService {
 
         let allergenList = parseAllergens(off.allergens)
 
-        return FoodProduct(
+        let product = FoodProduct(
             name: off.productName ?? "Unknown Product",
             brand: off.brands,
             barcode: barcode,
@@ -279,6 +283,7 @@ actor OpenFoodFactsService {
             micronutrients: micronutrients,
             allergens: allergenList
         )
+        return (product, realServingGrams != nil)
     }
 
     // Fallback for when OFF doesn't provide a parsed serving_quantity but the

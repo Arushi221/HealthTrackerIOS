@@ -60,6 +60,36 @@ private struct USDANutrient: Decodable {
     let value: Double?
 }
 
+// Branded Foods search results — a different shape (and nutrient ID scheme)
+// than the SR Legacy/Foundation search above.
+private struct USDABrandedSearchResponse: Decodable {
+    let foods: [USDABrandedFood]
+}
+
+private struct USDABrandedFood: Decodable {
+    let servingSize: Double?
+    let servingSizeUnit: String?
+    let foodNutrients: [USDABrandedNutrient]
+}
+
+// Branded foods key their nutrients by "nutrientNumber" (a string, e.g.
+// "203" for protein) rather than the "nutrientId" the SR Legacy/Foundation
+// dataset uses — the two schemes don't share values, so this can't reuse
+// USDANutrient/NutrientID above.
+private struct USDABrandedNutrient: Decodable {
+    let nutrientNumber: String?
+    let value: Double?
+}
+
+struct USDAServingMatch {
+    let servingAmount: Double
+    let servingUnit: String
+    let calories: Double
+    let protein: Double
+    let carbs: Double
+    let fat: Double
+}
+
 actor USDAService {
     static let shared = USDAService()
     private let base = "https://api.nal.usda.gov/fdc/v1"
@@ -87,6 +117,47 @@ actor USDAService {
               let food = response.foods.first else { return [:] }
 
         return extractMicronutrients(from: food.foodNutrients)
+    }
+
+    // Fallback for when Open Food Facts has no serving size for a product.
+    // USDA's Branded Foods dataset is sourced from manufacturer-submitted
+    // nutrition labels and often has real serving data even when OFF
+    // doesn't, especially for US products. Nutrient values in this search
+    // response are per 100g — verified empirically (USDA's own "per
+    // serving size measure" derivation label on these fields is misleading;
+    // the numbers only make sense, and match plausible real values, when
+    // treated as per 100g and scaled by servingSize/100 like everything
+    // else in this app).
+    func fetchServingInfo(for query: String) async -> USDAServingMatch? {
+        guard var components = URLComponents(string: "\(base)/foods/search") else { return nil }
+        components.queryItems = [
+            URLQueryItem(name: "query", value: query),
+            URLQueryItem(name: "dataType", value: "Branded"),
+            URLQueryItem(name: "pageSize", value: "1"),
+            URLQueryItem(name: "api_key", value: Secrets.usdaAPIKey)
+        ]
+        guard let url = components.url else { return nil }
+
+        guard let (data, _) = try? await session.data(from: url),
+              let response = try? JSONDecoder().decode(USDABrandedSearchResponse.self, from: data),
+              let food = response.foods.first,
+              let servingAmount = food.servingSize,
+              let servingUnit = food.servingSizeUnit,
+              servingAmount > 0 else { return nil }
+
+        func value(for nutrientNumber: String) -> Double {
+            food.foodNutrients.first(where: { $0.nutrientNumber == nutrientNumber })?.value ?? 0
+        }
+
+        let scale = servingAmount / 100.0
+        return USDAServingMatch(
+            servingAmount: servingAmount,
+            servingUnit: servingUnit,
+            calories: value(for: "208") * scale,
+            protein: value(for: "203") * scale,
+            carbs: value(for: "205") * scale,
+            fat: value(for: "204") * scale
+        )
     }
 
     private func extractMicronutrients(from nutrients: [USDANutrient]) -> [String: Double] {
