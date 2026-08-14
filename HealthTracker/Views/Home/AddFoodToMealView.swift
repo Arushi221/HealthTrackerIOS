@@ -13,6 +13,7 @@ struct AddFoodToMealView: View {
 
     @State private var mealType: MealType
     @State private var servings: String = "1"
+    @State private var servingAmountText: String
 
     init(product: FoodProduct, presetMealType: MealType? = nil, date: Date = Date(), onSave: @escaping () -> Void) {
         self.product = product
@@ -20,21 +21,45 @@ struct AddFoodToMealView: View {
         self.date = date
         self.onSave = onSave
         _mealType = State(initialValue: presetMealType ?? .lunch)
+        _servingAmountText = State(initialValue: String(Int(product.servingAmount)))
+    }
+
+    // Correcting the serving size rescales the nutrition preview live —
+    // useful since Open Food Facts often has no serving data at all for a
+    // product, in which case we fall back to a 100g guess that may not
+    // match the actual package.
+    private var correctionScale: Double {
+        guard product.servingAmount > 0, let edited = Double(servingAmountText), edited > 0 else { return 1 }
+        return edited / product.servingAmount
     }
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Product") {
+                Section {
                     LabeledContent("Name", value: product.name)
                     if let brand = product.brand {
                         LabeledContent("Brand", value: brand)
                     }
-                    LabeledContent("Serving size", value: "\(Int(product.servingAmount))\(product.servingUnit)")
-                    LabeledContent("Per serving", value: "\(Int(product.calories)) kcal  P:\(Int(product.protein))g  C:\(Int(product.carbs))g  F:\(Int(product.fat))g")
+                    HStack {
+                        Text("Serving size")
+                        Spacer()
+                        TextField("100", text: $servingAmountText)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 60)
+                        Text(product.servingUnit)
+                            .foregroundStyle(.secondary)
+                    }
+                    LabeledContent(
+                        "Per serving",
+                        value: "\(Int(product.calories * correctionScale)) kcal  P:\(Int(product.protein * correctionScale))g  C:\(Int(product.carbs * correctionScale))g  F:\(Int(product.fat * correctionScale))g"
+                    )
                     if !product.allergens.isEmpty {
                         LabeledContent("Allergens", value: product.allergens.joined(separator: ", "))
                     }
+                } footer: {
+                    Text("Open Food Facts doesn't always have the manufacturer's serving size. Check it against the package and correct it here if needed — the nutrition above updates to match.")
                 }
 
                 Section("Log as") {
@@ -66,6 +91,19 @@ struct AddFoodToMealView: View {
     }
 
     private func log() {
+        if correctionScale != 1 {
+            product.calories *= correctionScale
+            product.protein *= correctionScale
+            product.carbs *= correctionScale
+            product.fat *= correctionScale
+            if let fiber = product.fiber { product.fiber = fiber * correctionScale }
+            if let sugar = product.sugar { product.sugar = sugar * correctionScale }
+            for key in product.micronutrients.keys {
+                product.micronutrients[key]! *= correctionScale
+            }
+            product.servingAmount = Double(servingAmountText) ?? product.servingAmount
+        }
+
         let s = Double(servings) ?? 1.0
         context.insert(product)
 
