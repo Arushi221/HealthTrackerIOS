@@ -41,7 +41,11 @@ struct FoodSearchView: View {
                     Section("Previously Logged") {
                         ForEach(previouslyLogged) { product in
                             Button {
-                                select(product)
+                                // Use exactly as stored — no re-fetch. If the
+                                // serving size was corrected last time, that
+                                // correction is what's saved here; re-resolving
+                                // against OFF would silently overwrite it.
+                                selectedProduct = product
                             } label: {
                                 ProductRow(product: product)
                             }
