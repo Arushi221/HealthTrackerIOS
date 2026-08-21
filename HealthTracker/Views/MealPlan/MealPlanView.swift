@@ -429,7 +429,6 @@ private struct ShoppingListSheetView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var pdfURL: URL?
-    @State private var showingShareSheet = false
 
     var body: some View {
         NavigationStack {
@@ -490,37 +489,30 @@ private struct ShoppingListSheetView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
                 }
-                if let shoppingList {
+                // Only show the share button once the PDF is actually ready —
+                // ShareLink needs a real item up front, not a closure that
+                // generates one on tap.
+                if let pdfURL {
                     ToolbarItem(placement: .primaryAction) {
-                        Button {
-                            pdfURL = ShoppingListPDF.export(shoppingList)
-                            showingShareSheet = pdfURL != nil
-                        } label: {
+                        ShareLink(item: pdfURL) {
                             Image(systemName: "square.and.arrow.up")
                         }
                     }
                 }
             }
-            .sheet(isPresented: $showingShareSheet) {
-                if let pdfURL {
-                    ActivityView(activityItems: [pdfURL])
-                }
-            }
+            // Regenerate whenever the list itself changes (first load, or a
+            // fresh list after servings changed) rather than lazily on tap —
+            // ShareLink is a declarative view, so its item needs to already
+            // exist by the time this view builds its toolbar.
+            .onAppear { regeneratePDF() }
+            .onChange(of: shoppingList?.items.count) { _, _ in regeneratePDF() }
         }
     }
-}
 
-// Wraps the system share sheet, which includes a "Save to Files" action
-// alongside AirDrop/Mail/etc. — the standard way to get a document into
-// Files on iOS without building a custom file picker.
-private struct ActivityView: UIViewControllerRepresentable {
-    let activityItems: [Any]
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    private func regeneratePDF() {
+        guard let shoppingList else { pdfURL = nil; return }
+        pdfURL = ShoppingListPDF.export(shoppingList)
     }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 // Renders a ShoppingList to a simple paginated PDF — one section per store,
