@@ -23,6 +23,11 @@ enum LabTestCatalog {
         TrackedLabTest(name: "LDL Cholesterol", unit: "mg/dL", referenceLow: nil, referenceHigh: 100),
         TrackedLabTest(name: "HDL Cholesterol", unit: "mg/dL", referenceLow: 40, referenceHigh: nil),
         TrackedLabTest(name: "Triglycerides", unit: "mg/dL", referenceLow: nil, referenceHigh: 150),
-        TrackedLabTest(name: "hs-CRP", unit: "mg/L", referenceLow: nil, referenceHigh: 1.0)
+        TrackedLabTest(name: "hs-CRP", unit: "mg/L", referenceLow: nil, referenceHigh: 1.0),
+        TrackedLabTest(name: "TPO Antibodies", unit: "IU/mL", referenceLow: nil, referenceHigh: 35),
+        TrackedLabTest(name: "Thyroglobulin Antibodies (TgAb)", unit: "IU/mL", referenceLow: nil, referenceHigh: 4.5),
+        TrackedLabTest(name: "ANA Screen", unit: "index", referenceLow: nil, referenceHigh: 1.0),
+        TrackedLabTest(name: "DHEA Sulfate", unit: "mcg/dL", referenceLow: 65, referenceHigh: 380),
+        TrackedLabTest(name: "Leptin", unit: "ng/mL", referenceLow: 1, referenceHigh: 25)
     ]
 }
