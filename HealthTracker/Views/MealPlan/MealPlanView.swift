@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 struct MealPlanView: View {
     @Environment(\.modelContext) private var context
@@ -427,6 +428,8 @@ private struct ShoppingListSheetView: View {
     let onRetry: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @State private var pdfURL: URL?
+    @State private var showingShareSheet = false
 
     var body: some View {
         NavigationStack {
@@ -487,7 +490,109 @@ private struct ShoppingListSheetView: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
                 }
+                if let shoppingList {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button {
+                            pdfURL = ShoppingListPDF.export(shoppingList)
+                            showingShareSheet = pdfURL != nil
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                }
             }
+            .sheet(isPresented: $showingShareSheet) {
+                if let pdfURL {
+                    ActivityView(activityItems: [pdfURL])
+                }
+            }
+        }
+    }
+}
+
+// Wraps the system share sheet, which includes a "Save to Files" action
+// alongside AirDrop/Mail/etc. — the standard way to get a document into
+// Files on iOS without building a custom file picker.
+private struct ActivityView: UIViewControllerRepresentable {
+    let activityItems: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// Renders a ShoppingList to a simple paginated PDF — one section per store,
+// grouped by department, with per-item quantity/cost and a running total.
+private enum ShoppingListPDF {
+    static func export(_ list: ShoppingList) -> URL? {
+        let pageWidth: CGFloat = 612   // 8.5in @ 72dpi
+        let pageHeight: CGFloat = 792  // 11in @ 72dpi
+        let margin: CGFloat = 36
+        let contentWidth = pageWidth - margin * 2
+        let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
+
+        let titleFont = UIFont.boldSystemFont(ofSize: 20)
+        let storeFont = UIFont.boldSystemFont(ofSize: 15)
+        let deptFont = UIFont.boldSystemFont(ofSize: 12)
+        let itemFont = UIFont.systemFont(ofSize: 11)
+        let secondary: [NSAttributedString.Key: Any] = [.font: itemFont, .foregroundColor: UIColor.darkGray]
+
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("Shopping List.pdf")
+        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
+
+        do {
+            try renderer.writePDF(to: url) { context in
+                var y: CGFloat = margin
+                context.beginPage()
+
+                func newPageIfNeeded(_ neededHeight: CGFloat) {
+                    if y + neededHeight > pageHeight - margin {
+                        context.beginPage()
+                        y = margin
+                    }
+                }
+
+                "Shopping List".draw(at: CGPoint(x: margin, y: y), withAttributes: [.font: titleFont])
+                y += 28
+
+                let totalLine = "Estimated Total: $\(String(format: "%.2f", list.estimatedTotalCost))"
+                totalLine.draw(at: CGPoint(x: margin, y: y), withAttributes: secondary)
+                y += 26
+
+                for (store, items) in list.byStore {
+                    newPageIfNeeded(24)
+                    store.draw(at: CGPoint(x: margin, y: y), withAttributes: [.font: storeFont])
+                    y += 20
+
+                    let byDepartment = Dictionary(grouping: items, by: \.department)
+                    for department in byDepartment.keys.sorted() {
+                        newPageIfNeeded(18)
+                        department.draw(at: CGPoint(x: margin + 12, y: y), withAttributes: [.font: deptFont])
+                        y += 16
+
+                        for item in byDepartment[department]!.sorted(by: { $0.name < $1.name }) {
+                            newPageIfNeeded(15)
+                            let line = "\(item.name) — \(item.quantity)"
+                            let maxLineWidth = contentWidth - 90
+                            line.draw(
+                                in: CGRect(x: margin + 24, y: y, width: maxLineWidth, height: 14),
+                                withAttributes: [.font: itemFont]
+                            )
+                            let cost = String(format: "$%.2f", item.estimatedCost)
+                            let costSize = cost.size(withAttributes: secondary)
+                            cost.draw(at: CGPoint(x: pageWidth - margin - costSize.width, y: y), withAttributes: secondary)
+                            y += 15
+                        }
+                        y += 6
+                    }
+                    y += 10
+                }
+            }
+            return url
+        } catch {
+            return nil
         }
     }
 }
