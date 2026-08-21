@@ -227,16 +227,23 @@ actor MealPlanService {
         let expectedMeals = 7 * MealType.allCases.count
         let minAcceptableMeals = expectedMeals / 2  // a badly-thin plan isn't usable — surface an error rather than showing it
         var bestMeals: [SuggestedMeal] = []
+        var lastError: Error?
         for _ in 0..<4 {
-            let payload: WeeklyPlanPayload = try await send(body: body)
-            if payload.meals.count > bestMeals.count {
-                bestMeals = payload.meals
+            do {
+                let payload: WeeklyPlanPayload = try await send(body: body)
+                if payload.meals.count > bestMeals.count {
+                    bestMeals = payload.meals
+                }
+                if bestMeals.count >= expectedMeals { break }
+            } catch {
+                // A single bad attempt (timeout, truncated JSON, etc.) shouldn't
+                // sink an otherwise-good result from an earlier attempt — try again.
+                lastError = error
             }
-            if bestMeals.count >= expectedMeals { break }
         }
 
         guard bestMeals.count >= minAcceptableMeals else {
-            throw AnthropicServiceError.incompleteResponse
+            throw lastError ?? AnthropicServiceError.incompleteResponse
         }
         return bestMeals.syncedToDaily(goal: goal)
     }
@@ -371,21 +378,32 @@ actor MealPlanService {
         // Claude occasionally bails early on this task (a handful of items
         // instead of a full week's worth), even with plenty of token budget
         // left — retry a couple of times if the result looks implausibly short.
-        let minExpectedItems = max(8, meals.count)
+        // Note: consolidating repeated ingredients across a meal-prep week
+        // (same recipe several days in a row) means the item count is always
+        // well below the meal-slot count, so the floor here is intentionally
+        // modest rather than scaled to meals.count — that used to set an
+        // unreachable bar that burned all 3 retries on every single run.
+        let minExpectedItems = min(max(10, meals.count / 2), 20)
         var bestItems: [ShoppingListItem] = []
-        for attempt in 0..<3 {
-            let payload: ShoppingListItemsPayload = try await send(body: body)
-            if payload.items.count > bestItems.count {
-                bestItems = payload.items
+        var lastError: Error?
+        for _ in 0..<3 {
+            do {
+                let payload: ShoppingListItemsPayload = try await send(body: body)
+                if payload.items.count > bestItems.count {
+                    bestItems = payload.items
+                }
+                if bestItems.count >= minExpectedItems {
+                    break
+                }
+            } catch {
+                // Same principle as the weekly-plan loop: don't let one bad
+                // attempt discard a good result already captured earlier.
+                lastError = error
             }
-            if bestItems.count >= minExpectedItems {
-                break
-            }
-            if attempt < 2 { continue }
         }
 
         guard !bestItems.isEmpty else {
-            throw AnthropicServiceError.emptyResponse
+            throw lastError ?? AnthropicServiceError.emptyResponse
         }
 
         let total = bestItems.reduce(0) { $0 + $1.estimatedCost }
