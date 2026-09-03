@@ -141,6 +141,7 @@ private struct MealTypeSection: View {
 private struct MealRow: View {
     let log: FoodLog
     @Environment(\.modelContext) private var context
+    @State private var showingDetail = false
 
     private var meal: Meal { log.meal }
 
@@ -170,5 +171,101 @@ private struct MealRow: View {
         .padding()
         .background(.regularMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .contentShape(Rectangle())
+        .onTapGesture { showingDetail = true }
+        .sheet(isPresented: $showingDetail) {
+            MealDetailView(meal: meal)
+        }
     }
+}
+
+private struct MealDetailView: View {
+    let meal: Meal
+    @Environment(\.dismiss) private var dismiss
+
+    private var presentMicronutrients: [MicronutrientCatalog.Entry] {
+        MicronutrientCatalog.all.filter { meal.totalAmount(of: $0.key) > 0 }
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section("Macros") {
+                    LabeledContent("Calories", value: "\(Int(meal.totalCalories)) kcal")
+                    LabeledContent("Protein", value: "\(Int(meal.totalProtein)) g")
+                    LabeledContent("Carbs", value: "\(Int(meal.totalCarbs)) g")
+                    LabeledContent("Fat", value: "\(Int(meal.totalFat)) g")
+                    if let fiber = meal.totalFiber {
+                        LabeledContent("Fiber", value: "\(Int(fiber)) g")
+                    }
+                    if let sugar = meal.totalSugar {
+                        LabeledContent("Sugar", value: "\(Int(sugar)) g")
+                    }
+                }
+
+                let addedSugar = meal.totalAmount(of: "added_sugar")
+                if addedSugar > 0 {
+                    Section {
+                        LabeledContent("Added Sugar", value: "\(Int(addedSugar)) g")
+                    }
+                }
+
+                if !presentMicronutrients.isEmpty {
+                    Section("Vitamins & Minerals") {
+                        ForEach(presentMicronutrients, id: \.key) { entry in
+                            LabeledContent(entry.label, value: entry.formatted(meal.totalAmount(of: entry.key)))
+                        }
+                    }
+                } else {
+                    Section {
+                        Text("No detailed vitamin/mineral data available for this food.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .navigationTitle(meal.name)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close") { dismiss() }
+                }
+            }
+        }
+    }
+}
+
+private enum MicronutrientCatalog {
+    struct Entry {
+        let key: String
+        let label: String
+        let unit: String
+
+        // mg/µg amounts round to whole numbers; gram amounts (fats) keep one decimal.
+        func formatted(_ value: Double) -> String {
+            unit == "g" ? String(format: "%.1f %@", value, unit) : "\(Int(value.rounded())) \(unit)"
+        }
+    }
+
+    static let all: [Entry] = [
+        Entry(key: "saturated_fat", label: "Saturated Fat", unit: "g"),
+        Entry(key: "trans_fat", label: "Trans Fat", unit: "g"),
+        Entry(key: "omega_3", label: "Omega-3", unit: "g"),
+        Entry(key: "omega_6", label: "Omega-6", unit: "g"),
+        Entry(key: "sodium", label: "Sodium", unit: "mg"),
+        Entry(key: "calcium", label: "Calcium", unit: "mg"),
+        Entry(key: "iron", label: "Iron", unit: "mg"),
+        Entry(key: "potassium", label: "Potassium", unit: "mg"),
+        Entry(key: "magnesium", label: "Magnesium", unit: "mg"),
+        Entry(key: "zinc", label: "Zinc", unit: "mg"),
+        Entry(key: "phosphorus", label: "Phosphorus", unit: "mg"),
+        Entry(key: "vitamin_a", label: "Vitamin A", unit: "µg"),
+        Entry(key: "vitamin_c", label: "Vitamin C", unit: "mg"),
+        Entry(key: "vitamin_d", label: "Vitamin D", unit: "µg"),
+        Entry(key: "vitamin_e", label: "Vitamin E", unit: "mg"),
+        Entry(key: "vitamin_k", label: "Vitamin K", unit: "µg"),
+        Entry(key: "vitamin_b12", label: "Vitamin B12", unit: "µg"),
+        Entry(key: "vitamin_b6", label: "Vitamin B6", unit: "mg"),
+        Entry(key: "folate", label: "Folate", unit: "µg")
+    ]
 }

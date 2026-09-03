@@ -4,6 +4,7 @@ import SwiftData
 struct AddGoalView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
+    @Query private var profiles: [UserProfile]
 
     let existingGoal: Goal?
 
@@ -14,6 +15,8 @@ struct AddGoalView: View {
     @State private var excludedAllergens: [String]
     @State private var allergenInput: String = ""
     @State private var isAdjusting = false
+    @State private var maintenanceCalories: String
+    @State private var weeklyWeightGoalLbs: Double
 
     init(existingGoal: Goal? = nil) {
         self.existingGoal = existingGoal
@@ -22,11 +25,38 @@ struct AddGoalView: View {
         _carbs = State(initialValue: existingGoal.map { String(Int($0.targetCarbs)) } ?? "")
         _fat = State(initialValue: existingGoal.map { String(Int($0.targetFat)) } ?? "")
         _excludedAllergens = State(initialValue: existingGoal?.excludedAllergens ?? [])
+        let existingMaintenance = existingGoal?.maintenanceCalories ?? 0
+        _maintenanceCalories = State(initialValue: existingMaintenance > 0 ? String(Int(existingMaintenance)) : "")
+        _weeklyWeightGoalLbs = State(initialValue: existingGoal?.weeklyWeightGoalLbs ?? 0)
     }
 
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    HStack {
+                        Text("Maintenance Calories (kcal)")
+                        Spacer()
+                        TextField("optional", text: $maintenanceCalories)
+                            .keyboardType(.decimalPad)
+                            .multilineTextAlignment(.trailing)
+                            .frame(width: 80)
+                            .onChange(of: maintenanceCalories) { _, _ in applyWeightGoal() }
+                    }
+                    Picker("Weekly Goal", selection: $weeklyWeightGoalLbs) {
+                        Text("Lose 1 lb/wk").tag(-1.0)
+                        Text("Lose 0.5 lb/wk").tag(-0.5)
+                        Text("Maintain").tag(0.0)
+                        Text("Gain 0.5 lb/wk").tag(0.5)
+                        Text("Gain 1 lb/wk").tag(1.0)
+                    }
+                    .onChange(of: weeklyWeightGoalLbs) { _, _ in applyWeightGoal() }
+                } header: {
+                    Text("Weight Goal")
+                } footer: {
+                    Text("Optional — enter the calories it takes to maintain your current weight, then pick a weekly goal. Your daily calorie target below updates automatically (a 500 kcal/day deficit or surplus per pound per week). Leave this blank to just set your calorie target directly.")
+                }
+
                 Section {
                     MacroField(label: "Calories (kcal)", value: $calories)
                         .onChange(of: calories) { _, _ in rescaleAllMacros() }
@@ -66,7 +96,18 @@ struct AddGoalView: View {
                         .disabled(!isValid)
                 }
             }
+            .onAppear(perform: prefillMaintenanceFromProfileIfNeeded)
         }
+    }
+
+    // A brand-new goal with no maintenance calories entered yet gets a
+    // starting estimate from Profile's body metrics (Mifflin-St Jeor) —
+    // still fully editable, just saves typing it in from scratch.
+    private func prefillMaintenanceFromProfileIfNeeded() {
+        guard existingGoal == nil, maintenanceCalories.isEmpty,
+              let estimate = profiles.first?.estimatedMaintenanceCalories else { return }
+        maintenanceCalories = String(Int(estimate.rounded()))
+        applyWeightGoal()
     }
 
     private var isValid: Bool {
@@ -76,6 +117,14 @@ struct AddGoalView: View {
     // Protein and carbs are 4 kcal/g, fat is 9 kcal/g
     private var macroCalories: Double {
         (Double(protein) ?? 0) * 4 + (Double(carbs) ?? 0) * 4 + (Double(fat) ?? 0) * 9
+    }
+
+    // 3500 kcal ≈ 1 lb of body fat, so 1 lb/week is a 500 kcal/day deficit
+    // or surplus (250 for 0.5 lb/week) — the standard rule of thumb.
+    private func applyWeightGoal() {
+        guard let maintenance = Double(maintenanceCalories), maintenance > 0 else { return }
+        let target = maintenance + weeklyWeightGoalLbs * 500
+        calories = String(Int(target.rounded()))
     }
 
     private enum MacroKind { case protein, carbs, fat }
@@ -165,11 +214,15 @@ struct AddGoalView: View {
         let targetCalories = Double(calories) ?? 0
         let balanced = balancedMacros(targetCalories: targetCalories)
 
+        let maintenance = Double(maintenanceCalories) ?? 0
+
         if let existingGoal {
             existingGoal.targetCalories = targetCalories
             existingGoal.targetProtein = balanced.protein
             existingGoal.targetCarbs = balanced.carbs
             existingGoal.targetFat = balanced.fat
+            existingGoal.maintenanceCalories = maintenance
+            existingGoal.weeklyWeightGoalLbs = weeklyWeightGoalLbs
             existingGoal.excludedAllergens = excludedAllergens
         } else {
             let goal = Goal(
@@ -178,6 +231,8 @@ struct AddGoalView: View {
                 targetProtein: balanced.protein,
                 targetCarbs: balanced.carbs,
                 targetFat: balanced.fat,
+                maintenanceCalories: maintenance,
+                weeklyWeightGoalLbs: weeklyWeightGoalLbs,
                 excludedAllergens: excludedAllergens
             )
             context.insert(goal)

@@ -7,6 +7,7 @@ struct HomeView: View {
     @Query private var logs: [FoodLog]
     @State private var exerciseCalories: Double = 0
     @State private var selectedDate: Date = Date()
+    @Environment(\.scenePhase) private var scenePhase
 
     private var trackedCategories: [FoodCategory] {
         FoodCategoryCatalog.all.filter { category in
@@ -58,6 +59,19 @@ struct HomeView: View {
                 }
             }
             .task(id: selectedDate) {
+                await loadExerciseCalories()
+            }
+            // A workout logged in the Fitness/Health app or via Apple Watch
+            // while HealthTracker is backgrounded won't trigger the .task
+            // above (selectedDate hasn't changed) — refetch whenever the app
+            // comes back to the foreground so calories earned from it show
+            // up without the user having to flip dates to force a reload.
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    Task { await loadExerciseCalories() }
+                }
+            }
+            .refreshable {
                 await loadExerciseCalories()
             }
         }
