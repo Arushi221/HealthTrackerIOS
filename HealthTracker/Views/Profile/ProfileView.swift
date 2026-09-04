@@ -14,6 +14,10 @@ struct ProfileView: View {
     @State private var ageYears: String = ""
     @State private var biologicalSex: BiologicalSex = .female
     @State private var activityLevel: ActivityLevel = .moderate
+    @State private var useHealthKitActivityLevel: Bool = false
+    @State private var detectedAverageSteps: Double?
+    @State private var healthKitErrorMessage: String?
+    @Environment(\.scenePhase) private var scenePhase
 
     private var profile: UserProfile? { profiles.first }
 
@@ -66,6 +70,18 @@ struct ProfileView: View {
                         ForEach(ActivityLevel.allCases, id: \.self) { level in
                             Text(level.rawValue).tag(level)
                         }
+                    }
+                    .disabled(useHealthKitActivityLevel)
+                    Toggle("Estimate from Apple Health steps", isOn: $useHealthKitActivityLevel)
+                    if useHealthKitActivityLevel, let detectedAverageSteps {
+                        Text("~\(Int(detectedAverageSteps.rounded())) steps/day average (last 7 days)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    if let healthKitErrorMessage {
+                        Text(healthKitErrorMessage)
+                            .font(.caption)
+                            .foregroundStyle(.red)
                     }
                     if let bmi {
                         LabeledContent("BMI", value: String(format: "%.1f", bmi))
@@ -134,6 +150,30 @@ struct ProfileView: View {
             .onChange(of: ageYears) { _, _ in save() }
             .onChange(of: biologicalSex) { _, _ in save() }
             .onChange(of: activityLevel) { _, _ in save() }
+            .onChange(of: useHealthKitActivityLevel) { _, newValue in
+                save()
+                if newValue { Task { await detectActivityLevelFromHealthKit() } }
+            }
+            .task(id: useHealthKitActivityLevel) {
+                if useHealthKitActivityLevel { await detectActivityLevelFromHealthKit() }
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active, useHealthKitActivityLevel {
+                    Task { await detectActivityLevelFromHealthKit() }
+                }
+            }
+        }
+    }
+
+    private func detectActivityLevelFromHealthKit() async {
+        do {
+            try await HealthKitService.shared.requestAuthorization()
+            let avgSteps = try await HealthKitService.shared.averageDailySteps()
+            detectedAverageSteps = avgSteps
+            healthKitErrorMessage = nil
+            activityLevel = ActivityLevel.forAverageDailySteps(avgSteps)
+        } catch {
+            healthKitErrorMessage = "Couldn't read step data from Apple Health."
         }
     }
 
@@ -147,6 +187,7 @@ struct ProfileView: View {
         ageYears = profile.ageYears > 0 ? String(profile.ageYears) : ""
         biologicalSex = profile.biologicalSex
         activityLevel = profile.activityLevel
+        useHealthKitActivityLevel = profile.useHealthKitActivityLevel
     }
 
     private func save() {
@@ -164,6 +205,7 @@ struct ProfileView: View {
             profile.ageYears = age
             profile.biologicalSex = biologicalSex
             profile.activityLevel = activityLevel
+            profile.useHealthKitActivityLevel = useHealthKitActivityLevel
         } else {
             let newProfile = UserProfile(
                 weeklyBudget: budget,
@@ -173,7 +215,8 @@ struct ProfileView: View {
                 weightLbs: weight,
                 ageYears: age,
                 biologicalSex: biologicalSex,
-                activityLevel: activityLevel
+                activityLevel: activityLevel,
+                useHealthKitActivityLevel: useHealthKitActivityLevel
             )
             context.insert(newProfile)
         }

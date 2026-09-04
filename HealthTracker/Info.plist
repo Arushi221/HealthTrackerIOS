@@ -21,7 +21,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Used to scan food barcodes</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Used to add calories burned from workouts to your daily calorie goal</string>
+	<string>Used to add calories burned from workouts to your daily calorie goal and to estimate your activity level from your step count</string>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

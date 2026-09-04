@@ -1,6 +1,24 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import UniformTypeIdentifiers
+
+// Drag payload for moving a logged meal between meal-type sections — carries
+// just the FoodLog's id, resolved back to the real model on drop since
+// SwiftData models can't conform to Transferable directly.
+private struct MealLogTransfer: Codable, Transferable {
+    let logID: UUID
+
+    static var transferRepresentation: some TransferRepresentation {
+        CodableRepresentation(contentType: .mealLogTransfer)
+    }
+}
+
+private extension UTType {
+    static var mealLogTransfer: UTType {
+        UTType(exportedAs: "com.healthtracker.mealLogTransfer")
+    }
+}
 
 struct TodayMealsSection: View {
     let logs: [FoodLog]
@@ -34,7 +52,7 @@ struct TodayMealsSection: View {
             }
 
             ForEach(MealType.allCases, id: \.self) { mealType in
-                MealTypeSection(mealType: mealType, logs: logs(for: mealType), date: date)
+                MealTypeSection(mealType: mealType, logs: logs(for: mealType), date: date, onDropLog: moveLog)
             }
         }
         .contentShape(Rectangle())
@@ -72,6 +90,12 @@ struct TodayMealsSection: View {
         showFeedback("Copied \(yesterdayLogs.count) meal\(yesterdayLogs.count == 1 ? "" : "s") from yesterday")
     }
 
+    private func moveLog(id: UUID, to mealType: MealType) {
+        guard let log = logs.first(where: { $0.id == id }), log.meal.mealType != mealType else { return }
+        log.meal.mealType = mealType
+        UISelectionFeedbackGenerator().selectionChanged()
+    }
+
     private func showFeedback(_ text: String) {
         withAnimation { feedback = text }
         Task {
@@ -87,9 +111,11 @@ private struct MealTypeSection: View {
     let mealType: MealType
     let logs: [FoodLog]
     let date: Date
+    let onDropLog: (UUID, MealType) -> Void
 
     @State private var showingSearch = false
     @State private var showingQuickAdd = false
+    @State private var isDropTargeted = false
 
     private var totalCalories: Double {
         logs.reduce(0) { $0 + $1.meal.totalCalories }
@@ -119,7 +145,7 @@ private struct MealTypeSection: View {
             }
 
             if logs.isEmpty {
-                Text("No items logged")
+                Text(isDropTargeted ? "Drop here to move to \(mealType.rawValue)" : "No items logged")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .padding(.vertical, 4)
@@ -128,6 +154,17 @@ private struct MealTypeSection: View {
                     MealRow(log: log)
                 }
             }
+        }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(isDropTargeted ? Color.accentColor.opacity(0.12) : Color.clear)
+        )
+        .dropDestination(for: MealLogTransfer.self) { items, _ in
+            for item in items { onDropLog(item.logID, mealType) }
+            return true
+        } isTargeted: { targeted in
+            isDropTargeted = targeted
         }
         .sheet(isPresented: $showingSearch) {
             FoodSearchView(mealType: mealType, date: date)
@@ -173,9 +210,26 @@ private struct MealRow: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .contentShape(Rectangle())
         .onTapGesture { showingDetail = true }
+        .draggable(MealLogTransfer(logID: log.id)) {
+            MealDragPreview(meal: meal)
+        }
         .sheet(isPresented: $showingDetail) {
             MealDetailView(meal: meal)
         }
+    }
+}
+
+private struct MealDragPreview: View {
+    let meal: Meal
+
+    var body: some View {
+        HStack {
+            Text(meal.name).font(.subheadline.weight(.medium))
+            Text("\(Int(meal.totalCalories)) kcal").font(.caption).foregroundStyle(.secondary)
+        }
+        .padding(8)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
     }
 }
 

@@ -43,6 +43,18 @@ enum ActivityLevel: String, Codable, CaseIterable {
         case .veryActive: return 1.9
         }
     }
+
+    // Rough thresholds mapping a 7-day average step count (from Apple
+    // Health/Apple Watch) onto the standard activity-level tiers above.
+    static func forAverageDailySteps(_ steps: Double) -> ActivityLevel {
+        switch steps {
+        case ..<5000: return .sedentary
+        case 5000..<7500: return .light
+        case 7500..<10000: return .moderate
+        case 10000..<12500: return .active
+        default: return .veryActive
+        }
+    }
 }
 
 // A single settings record for the whole app — grocery budget and preferred
@@ -60,6 +72,7 @@ final class UserProfile {
     var ageYears: Int = 0
     var biologicalSex: BiologicalSex = BiologicalSex.female
     var activityLevel: ActivityLevel = ActivityLevel.moderate
+    var useHealthKitActivityLevel: Bool = false
 
     var bmi: Double? {
         guard heightInches > 0, weightLbs > 0 else { return nil }
@@ -86,7 +99,8 @@ final class UserProfile {
         weightLbs: Double = 0,
         ageYears: Int = 0,
         biologicalSex: BiologicalSex = .female,
-        activityLevel: ActivityLevel = .moderate
+        activityLevel: ActivityLevel = .moderate,
+        useHealthKitActivityLevel: Bool = false
     ) {
         self.id = UUID()
         self.weeklyBudget = weeklyBudget
@@ -97,5 +111,6 @@ final class UserProfile {
         self.ageYears = ageYears
         self.biologicalSex = biologicalSex
         self.activityLevel = activityLevel
+        self.useHealthKitActivityLevel = useHealthKitActivityLevel
     }
 }

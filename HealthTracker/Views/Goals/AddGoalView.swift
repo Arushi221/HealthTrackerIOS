@@ -54,7 +54,7 @@ struct AddGoalView: View {
                 } header: {
                     Text("Weight Goal")
                 } footer: {
-                    Text("Optional — enter the calories it takes to maintain your current weight, then pick a weekly goal. Your daily calorie target below updates automatically (a 500 kcal/day deficit or surplus per pound per week). Leave this blank to just set your calorie target directly.")
+                    Text("Optional — enter the calories it takes to maintain your current weight, then pick a weekly goal. Your daily calorie target and macro split below update automatically (a 500 kcal/day deficit or surplus per pound per week, with extra protein while losing and extra carbs while gaining). Leave this blank to just set your calorie target directly.")
                 }
 
                 Section {
@@ -125,6 +125,17 @@ struct AddGoalView: View {
         guard let maintenance = Double(maintenanceCalories), maintenance > 0 else { return }
         let target = maintenance + weeklyWeightGoalLbs * 500
         calories = String(Int(target.rounded()))
+
+        // Re-derive protein/carbs/fat from scratch against the weight-goal's
+        // split (rather than just rescaling whatever was there before) so
+        // switching between losing/maintaining/gaining actually changes the
+        // macro ratio, not just the calorie total.
+        let split = macroSplit
+        isAdjusting = true
+        protein = String(Int((target * split.protein / 4).rounded()))
+        carbs = String(Int((target * split.carbs / 4).rounded()))
+        fat = String(Int((target * split.fat / 9).rounded()))
+        isAdjusting = false
     }
 
     private enum MacroKind { case protein, carbs, fat }
@@ -183,12 +194,25 @@ struct AddGoalView: View {
             carbs = String(Int((c * scale).rounded()))
             fat = String(Int((f * scale).rounded()))
         } else {
-            // No macros set yet — seed a standard 30/40/30 protein/carbs/fat split
-            protein = String(Int((cal * 0.30 / 4).rounded()))
-            carbs = String(Int((cal * 0.40 / 4).rounded()))
-            fat = String(Int((cal * 0.30 / 9).rounded()))
+            // No macros set yet — seed a split based on the weight goal: more
+            // protein in a deficit to help preserve muscle, more carbs in a
+            // surplus for training energy, a standard 30/40/30 at maintenance.
+            let split = macroSplit
+            protein = String(Int((cal * split.protein / 4).rounded()))
+            carbs = String(Int((cal * split.carbs / 4).rounded()))
+            fat = String(Int((cal * split.fat / 9).rounded()))
         }
         isAdjusting = false
+    }
+
+    private var macroSplit: (protein: Double, carbs: Double, fat: Double) {
+        if weeklyWeightGoalLbs < 0 {
+            return (0.35, 0.35, 0.30)
+        } else if weeklyWeightGoalLbs > 0 {
+            return (0.30, 0.45, 0.25)
+        } else {
+            return (0.30, 0.40, 0.30)
+        }
     }
 
     // If the entered macros don't add up to the calorie target, scale them
