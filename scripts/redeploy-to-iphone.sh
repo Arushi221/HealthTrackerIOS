@@ -30,7 +30,7 @@ log "Starting rebuild + reinstall"
 # Skip the (slow, noisy) build entirely if the phone isn't reachable right
 # now — xcodebuild would otherwise fail with a multi-hundred-line "no matching
 # destination" dump for what is just an ordinary "not plugged in today" state.
-if ! xcrun devicectl device info details --device "$DEVICE_ID" 2>/dev/null | grep -q "tunnelState: available"; then
+if ! xcrun devicectl device info details --device "$DEVICE_ID" 2>/dev/null | grep -q "tunnelState: connected"; then
     log "SKIPPED: iPhone not reachable (not connected via USB or Wi-Fi)."
     notify "HealthTracker Redeploy" "Skipped — iPhone not reachable. Connect it via USB or Wi-Fi before the 7-day expiry."
     exit 0
