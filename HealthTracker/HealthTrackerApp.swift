@@ -16,6 +16,7 @@ struct HealthTrackerApp: App {
                 NutrientGoal.self,
                 LabResult.self,
                 FoodCategoryGoal.self,
+                IdealFoodGoal.self,
                 UserProfile.self,
                 SavedMealPlan.self
             )

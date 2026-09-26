@@ -37,6 +37,10 @@
 		975F7AC5B9C1FD4BE253DC37 /* FoodCategoryCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61E9872043648486AE5EB5E5 /* FoodCategoryCard.swift */; };
 		99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7165BA0322BBB7141EED69 /* MealPlanView.swift */; };
 		7C5468BD15657D446359BDA4 /* UserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E80752006A2E13613F705DB /* UserProfile.swift */; };
+		918BC998BB9EFFE22599040C /* IdealFoodGoal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D17F15563B046982A0E448D6 /* IdealFoodGoal.swift */; };
+		2F782FEF01BD50B35DCA11C0 /* IdealFoodMatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FFEB2A6C70244A551563554 /* IdealFoodMatchService.swift */; };
+		4C4BE1EE9F9C689720C99022 /* AddIdealFoodsGoalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23C61E3A9295E12141870229 /* AddIdealFoodsGoalView.swift */; };
+		7194CCC65004ADB2F8366478 /* IdealFoodsGoalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37732D068CDE42E24D0A149B /* IdealFoodsGoalCard.swift */; };
 		742B3B5FC0189A1AAACE36C7 /* SavedMealPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A3CA0509A603E66E5A64BD3 /* SavedMealPlan.swift */; };
 		4BD85DEB06F843A8954B1AC1 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BE83BAB14449FC64A43688E /* ProfileView.swift */; };
 		A6779DCEC34DF673EEC2295C /* USDAService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01563E12C1F8267343253B4B /* USDAService.swift */; };
@@ -94,6 +98,10 @@
 		9EEB4603473FC26677F634FF /* FoodCategoryGoalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoodCategoryGoalCard.swift; sourceTree = "<group>"; };
 		BF7165BA0322BBB7141EED69 /* MealPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealPlanView.swift; sourceTree = "<group>"; };
 		8E80752006A2E13613F705DB /* UserProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserProfile.swift; sourceTree = "<group>"; };
+		D17F15563B046982A0E448D6 /* IdealFoodGoal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdealFoodGoal.swift; sourceTree = "<group>"; };
+		6FFEB2A6C70244A551563554 /* IdealFoodMatchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdealFoodMatchService.swift; sourceTree = "<group>"; };
+		23C61E3A9295E12141870229 /* AddIdealFoodsGoalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddIdealFoodsGoalView.swift; sourceTree = "<group>"; };
+		37732D068CDE42E24D0A149B /* IdealFoodsGoalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdealFoodsGoalCard.swift; sourceTree = "<group>"; };
 		3A3CA0509A603E66E5A64BD3 /* SavedMealPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedMealPlan.swift; sourceTree = "<group>"; };
 		1BE83BAB14449FC64A43688E /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		C3173664487E70C187641837 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -143,6 +151,7 @@
 				569D8CEE9DF3A85BB094A460 /* Goal.swift */,
 				C3968C93D864558F1DB87A76 /* Meal.swift */,
 				8E80752006A2E13613F705DB /* UserProfile.swift */,
+				D17F15563B046982A0E448D6 /* IdealFoodGoal.swift */,
 				3A3CA0509A603E66E5A64BD3 /* SavedMealPlan.swift */,
 			);
 			path = Models;
@@ -157,6 +166,7 @@
 				26F75F47365B9F768865880A /* NutrientProgressCard.swift */,
 				967331C44D7C971CBB10BF4A /* NoGoalBanner.swift */,
 				88A37F96D5637B8466DFE41E /* TodayMealsSection.swift */,
+				37732D068CDE42E24D0A149B /* IdealFoodsGoalCard.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -213,6 +223,7 @@
 				C82649557B5D6648834D8AEA /* LabResultsView.swift */,
 				741CA7CF7720C92F7E852035 /* LabResultDetailView.swift */,
 				46B5A34F81D10E3A93C737CA /* SuggestedNutrientGoalsView.swift */,
+				23C61E3A9295E12141870229 /* AddIdealFoodsGoalView.swift */,
 			);
 			path = Goals;
 			sourceTree = "<group>";
@@ -253,6 +264,7 @@
 				954386D869C76977C55F9166 /* NutrientGoalSuggestionService.swift */,
 				D09CCF9107970ABDC0ECFE32 /* OpenFoodFactsService.swift */,
 				01563E12C1F8267343253B4B /* USDAService.swift */,
+				6FFEB2A6C70244A551563554 /* IdealFoodMatchService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -362,6 +374,10 @@
 				1B673149CAE62E8E4FEC50B2 /* Meal.swift in Sources */,
 				99FEBB64E2246A83F545B0A7 /* MealPlanView.swift in Sources */,
 				7C5468BD15657D446359BDA4 /* UserProfile.swift in Sources */,
+				918BC998BB9EFFE22599040C /* IdealFoodGoal.swift in Sources */,
+				2F782FEF01BD50B35DCA11C0 /* IdealFoodMatchService.swift in Sources */,
+				4C4BE1EE9F9C689720C99022 /* AddIdealFoodsGoalView.swift in Sources */,
+				7194CCC65004ADB2F8366478 /* IdealFoodsGoalCard.swift in Sources */,
 				742B3B5FC0189A1AAACE36C7 /* SavedMealPlan.swift in Sources */,
 				4BD85DEB06F843A8954B1AC1 /* ProfileView.swift in Sources */,
 				EED94614ED79A297E427DB84 /* NoGoalBanner.swift in Sources */,

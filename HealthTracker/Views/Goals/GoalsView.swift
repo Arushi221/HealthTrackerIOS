@@ -6,13 +6,16 @@ struct GoalsView: View {
     @Query(filter: #Predicate<Goal> { $0.isActive }) private var goals: [Goal]
     @Query(filter: #Predicate<NutrientGoal> { $0.isActive }) private var nutrientGoals: [NutrientGoal]
     @Query(filter: #Predicate<FoodCategoryGoal> { $0.isActive }) private var foodCategoryGoals: [FoodCategoryGoal]
+    @Query(filter: #Predicate<IdealFoodGoal> { $0.isActive }) private var idealFoodGoals: [IdealFoodGoal]
     @Query private var logs: [FoodLog]
     @State private var showingAddGoal = false
     @State private var showingAddNutrientGoal = false
+    @State private var showingAddIdealFoodsGoal = false
     @State private var editingGoal: Goal?
     @State private var editingNutrientGoal: NutrientGoal?
     @State private var addingCategoryGoal: FoodCategory?
     @State private var editingCategoryGoal: FoodCategoryGoal?
+    @State private var editingIdealFoodsGoal: IdealFoodGoal?
 
     var body: some View {
         NavigationStack {
@@ -102,6 +105,32 @@ struct GoalsView: View {
                     }
                 }
 
+                Section("Ideal Foods") {
+                    if let goal = idealFoodGoals.first {
+                        IdealFoodsGoalCard(goal: goal, logs: logs)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    context.delete(goal)
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                Button {
+                                    editingIdealFoodsGoal = goal
+                                } label: {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                .tint(.blue)
+                            }
+                    } else {
+                        Button("Set Ideal Foods Goal") {
+                            showingAddIdealFoodsGoal = true
+                        }
+                        .foregroundStyle(.blue)
+                    }
+                }
+
                 Section("Health") {
                     NavigationLink("Lab Results") {
                         LabResultsView()
@@ -135,6 +164,12 @@ struct GoalsView: View {
                 if let category = FoodCategoryCatalog.all.first(where: { $0.key == goal.categoryKey }) {
                     AddFoodCategoryGoalView(category: category, existingGoal: goal)
                 }
+            }
+            .sheet(isPresented: $showingAddIdealFoodsGoal) {
+                AddIdealFoodsGoalView()
+            }
+            .sheet(item: $editingIdealFoodsGoal) { goal in
+                AddIdealFoodsGoalView(existingGoal: goal)
             }
             .onAppear(perform: deleteLegacyNonDailyGoals)
         }
